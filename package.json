@@ -1,0 +1,49 @@
+{
+  "name": "jinproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./index.js",
+  "scripts": {
+    "build": "webpack --config ./webpack.prod.js",
+    "dev": "webpack serve --config ./webpack.dev.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuangDinhx/JinProject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/QuangDinhx/JinProject/issues"
+  },
+  "homepage": "https://github.com/QuangDinhx/JinProject#readme",
+  "dependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "internal-ip": "^7.0.0",
+    "ip": "^1.1.8",
+    "portfinder-sync": "^0.0.2",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.0",
+    "@babel/preset-env": "^7.18.0",
+    "@babel/preset-react": "^7.17.12",
+    "babel-loader": "^8.2.5",
+    "css-loader": "^6.7.1",
+    "html-webpack-plugin": "^5.5.0",
+    "sass": "^1.52.1",
+    "sass-loader": "^13.0.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  }
+}
