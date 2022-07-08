@@ -19,12 +19,15 @@
   },
   "homepage": "https://github.com/QuangDinhx/JinProject#readme",
   "dependencies": {
+    "@google/model-viewer": "^1.12.0",
     "clean-webpack-plugin": "^4.0.0",
     "internal-ip": "^7.0.0",
     "ip": "^1.1.8",
     "portfinder-sync": "^0.0.2",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "request": "^2.79.0",
+    "swiper": "^7.3.1"
   },
   "babel": {
     "presets": [
@@ -37,10 +40,14 @@
     "@babel/preset-env": "^7.18.0",
     "@babel/preset-react": "^7.17.12",
     "babel-loader": "^8.2.5",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
+    "html-loader": "^3.1.2",
     "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.1",
     "sass": "^1.52.1",
-    "sass-loader": "^13.0.0",
+    "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",
