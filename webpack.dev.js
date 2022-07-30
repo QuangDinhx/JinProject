@@ -24,7 +24,7 @@ module.exports = merge(
                 overlay: true,
             },
             static: {
-                directory: path.join(__dirname, './build'),
+                directory: path.join(__dirname, './dist'),
             },
            
             open: true,

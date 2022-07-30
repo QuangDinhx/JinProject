@@ -8,14 +8,17 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper";
 
-import './style.scss'
-
+import './subdir/style.scss'
+// import headphoneAbout from './assets/headphone-about.jpg'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
-import hp from './assets/headphoneBaner/new (1).glb'
+import hpb from './assets/headphone-about.jpg'
+import opl from './assets/opensea-logo.png'
+import gif from './subdir/bg-3.gif'
+
 
 const a = Math.floor(Math.random() * 11) + 1;
     
-// const hp = React.lazy(() => import(`./assets/headphoneBaner/new (1).glb`));
+
 
   const Menu = props => {
     return (
@@ -34,13 +37,18 @@ const a = Math.floor(Math.random() * 11) + 1;
               </a>
             </li>
             <li>
-              <a href="#projects" onClick={props.toggleMenu}>
-                PORTFOLIO
+              <a href="#creative" onClick={props.toggleMenu}>
+                CREATIVE
               </a>
             </li>
             <li>
-              <a href="#contact" onClick={props.toggleMenu}>
-                CONTACT
+              <a href="#showroom" onClick={props.toggleMenu}>
+                SHOWROOM
+              </a>
+            </li>
+            <li>
+              <a href="#roadmap" onClick={props.toggleMenu}>
+                ROADMAP
               </a>
             </li>
           </ul>
@@ -63,6 +71,36 @@ const a = Math.floor(Math.random() * 11) + 1;
             <p className="brand">
               <strong>DEZAIN</strong>
             </p>
+            <div className="leftContent">
+              <a href="#welcome-section" >
+                HOME
+              </a>
+              <a href="#about" >
+                ABOUT
+              </a>
+              <a href="#creative" >
+                CREATIVE
+              </a>
+              <a href="#showroom" >
+                SHOWROOM
+              </a>
+              <a href="#roadmap" >
+                ROADMAP
+              </a>
+            </div>
+            <div className="rightContent">
+              <div className="media-block">
+                <a className="media-link twiter-link" href="https://twitter.com/nasclubdebates">
+                    <img src="https://s3.amazonaws.com/files.enjin.com/851662/Footer_Images_Optimised/Twitter-min.png" />
+                </a>
+                <a className="media-link discord-link" href="https://discord.gg/aGNz5KE">
+                    <img src="https://s3.amazonaws.com/files.enjin.com/851662/Footer_Images_Optimised/Discord-min.png" />
+                </a>
+              </div>
+              <button className="custom-btn connectButton">
+                <span>CONNECT NOW !</span><span>OWNER</span>
+              </button>
+            </div>
             <a
               onClick={props.toggleMenu}
               className={props.showMenu === 'active' ? 'menu-button active' : 'menu-button'}
@@ -113,11 +151,14 @@ const a = Math.floor(Math.random() * 11) + 1;
             </span>
           </h1>
           <div className="buttons">
-            <a href="#projects">Connect now</a>
-            <a href="#contact" className="cta">
-              Try it
-            </a>
+            <button className="custom-btn btn-11">Connect now</button>
+            <button className="custom-btn btn-9">Try it<div className="dot"></div></button>
           </div>
+          
+          <a id="openSea" href="https://opensea.io/3DHeadphone" >
+            Do you own our NFTs ? Check it out!
+          </a>
+          
         </div>
         <div className='modelViewer'>
           
@@ -187,75 +228,157 @@ const a = Math.floor(Math.random() * 11) + 1;
     About Component
    ***********************/
   
-  const About = props => {
-    return(<div>do some thing</div>)
-  };
-  
-  
-  /***********************
-    Project Component
-   ***********************/
-  
-  const Project = props => {
-    const tech = {
-      sass: 'fab fa-sass',
-      css: 'fab fa-css3-alt',
-      js: 'fab fa-js-square',
-      react: 'fab fa-react',
-      vue: 'fab fa-vuejs',
-      d3: 'far fa-chart-bar',
-      node: 'fab fa-node'
+    const About = props => {
+      
+      const [isTrigger,setTrigger] = useState(false);
+      useEffect(()=>{
+        window.addEventListener("scroll", listenToScroll);
+        if(isTrigger){
+          var str = document.getElementsByClassName('wrapper')[0].innerHTML.toString();
+          var i = 0;
+          document.getElementsByClassName('wrapper')[0].innerHTML = "";
+
+          setTimeout(function() {
+              var se = setInterval(function() {
+                  i++;
+                  document.getElementsByClassName('wrapper')[0].innerHTML = str.slice(0, i) + "|";
+                  if (i == str.length) {
+                      clearInterval(se);
+                      document.getElementsByClassName('wrapper')[0].innerHTML = str;
+                  }
+              }, 10);
+          },1);
+        }
+        return () => window.removeEventListener("scroll", listenToScroll); 
+        
+
+      },[isTrigger])
+      const listenToScroll = () => {
+        let heightToHideFrom = 600;
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        if (winScroll > heightToHideFrom && isTrigger == false) {  
+          setTrigger(true);
+          
+        }  
+      };
+      
+
+      return (
+        <section id="about">
+          {isTrigger&&
+            <div className="wrapper">
+            <article>
+              <div className="title">
+                <h3>What is DEZAIN ?</h3>
+                <p className="separator" />
+              </div>
+              
+                <div className="desc full">
+                <h4 className="subtitle">DEZAIN is a range of services offered as NFT.</h4>
+                <div>
+                  <img>
+                    {/* them image o day */}
+                  </img>
+                  <p>
+                    DEZAIN allows you to upload and edit 3d model files in a simple way 
+                    that anyone can do it. Also you can admire your edited model in 
+                    different ways. Even if you don't own our NFT, you will still be able to 
+                    use most of the features but with your contribution NFT will unlock 
+                    more cool features and help us develop more features other in the future.
+                  </p>
+                </div>
+                
+                </div>
+              
+              
+              <div className="title">
+                <h3>NFTs</h3>
+                <p className="separator" />
+              </div>
+              
+              <div className="desc full">
+              <h4 className="subtitle">Enjoy owning cool NFT headphones</h4>
+                <div className="containerAbout">
+                  <div className="left">
+                    <a href="#welcome-section">
+                    <img src={hpb} id="image-about"></img>
+                    </a>
+                  </div>
+                  <div className="right">
+                    <div className="content">
+                      <p>
+                      We offer you NFTs of various shapes and colors as 3d models for your collection. Each NTFs is unique and irreplaceable.
+                      </p>
+                      <p>
+                      If you don't already have one, you can check out our store on OpenSea. Check it now to enjoy service offers
+                      </p>
+                      <a href="https://opensea.io/3DHeadphone"><button className="custom-btn btn-5" ><span>Buy now</span></button></a>
+                      <a href="https://opensea.io/"><img src={opl} id="logo"></img></a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              
+              
+              {/* <div className="desc full">
+                <h4 className="subtitle">Also a designer.</h4>
+                <p>
+                  I feel comfortable working with many Adobe products. Photoshop, Illustrator, InDesign,
+                  Lightroom or Xd are some kind of industry standards and I love working with them. I'm
+                  not limited to them, though: Gimp, Inkscape or Figma are also very valid applications
+                  that I've been working with.
+                </p>
+                <p>
+                  User interfaces, brochures, books, branding... You name it! As I mentioned, creating
+                  pretty things is particularly important for me.
+                </p>
+              </div> */}
+            </article>
+          </div>
+          }
+          
+        </section>
+      );
     };
-  
-    const link = props.link || 'http://';
-    const repo = props.repo || 'http://';
-  
-    return (
-      <div className="project">
-        <a className="project-link" href={link} target="_blank" rel="noopener noreferrer">
-          <img className="project-image" src={props.img} alt={'Screenshot of ' + props.title} />
-        </a>
-        <div className="project-details">
-          <div className="project-tile">
-            <p className="icons">
-              {props.tech.split(' ').map(t => (
-                <i className={tech[t]} key={t} />
-              ))}
-            </p>
-            {props.title}{' '}
-          </div>
-          {props.children}
-          <div className="buttons">
-            <a href={repo} target="_blank" rel="noopener noreferrer">
-              View source <i className="fas fa-external-link-alt" />
-            </a>
-            <a href={link} target="_blank" rel="noopener noreferrer">
-              Try it Live <i className="fas fa-external-link-alt" />
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  };
-  
+    
   
   
   /***********************
-    Projects Component
+    Creative Component
    ***********************/
   
-  const Projects = props => {
+  const Creative = props => {
     return(
-      <div></div>
+      <section id="creative">
+        
+      </section>
     )
   };
   
   
   
   /***********************
-    Contact Component
+    Showroom Component
    ***********************/
   
+  const Showroom = props => {
+    return (
+      <div></div>
+    );
+  };
+  
+  
+  
+  /***********************
+    Roadmap Component
+   ***********************/
+  
+  const Roadmap = props => {
+    return (
+      <div></div>
+    );
+  };
   const Contact = props => {
     return (
       <section id="contact">
@@ -290,25 +413,7 @@ const a = Math.floor(Math.random() * 11) + 1;
         </div>
       </section>
     );
-  };
-  
-  
-  
-  /***********************
-    Footer Component
-   ***********************/
-  
-  const Footer = props => {
-    return (
-      <footer>
-        <div className="wrapper">
-          <h3>THANKS FOR VISITING</h3>
-          <p>© {new Date().getFullYear()} Yago Estévez.</p>
-          <SocialLinks />
-        </div>
-      </footer>
-    );
-  };
+  }
   
   
   
@@ -354,6 +459,7 @@ const a = Math.floor(Math.random() * 11) + 1;
   
   
   
+  
   /***********************
     Main Component
    ***********************/
@@ -372,43 +478,20 @@ const a = Math.floor(Math.random() * 11) + 1;
             : 'deactive'
       }));
     };
-  
-    render() {
-      return (
-        <React.Fragment>
-          <Menu toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
-          <Nav toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
-          <Header />
-          <About />
-          <Projects />
-          <Contact />
-          <Footer />
-        </React.Fragment>
-      );
-    }
-  
-    componentDidMount() {
+    handleScroll = () => {
       const navbar = document.querySelector('#navbar');
       const header = document.querySelector('#welcome-section');
-      const forest = document.querySelector('.forest');
-      const silhouette = document.querySelector('.silhouette');
-      let forestInitPos = -300;
-  
-      window.onscroll = () => {
-        let scrollPos = document.documentElement.scrollTop || document.body.scrollTop;
-  
-        if (scrollPos <= window.innerHeight) {
-          silhouette.style.bottom = `${parseInt(scrollPos / 6)}px`;
-          forest.style.bottom = `${parseInt(forestInitPos + scrollPos / 6)}px`;
-        }
-  
-        if (scrollPos - 100 <= window.innerHeight)
-          header.style.visibility = header.style.visibility === 'hidden' && 'visible';
-        else header.style.visibility = 'hidden';
-  
-        if (scrollPos + 100 >= window.innerHeight) navbar.classList.add('bg-active');
-        else navbar.classList.remove('bg-active');
-      };
+      let scrollPos = document.documentElement.scrollTop || document.body.scrollTop;
+
+      
+
+      if (scrollPos - 100 <= window.innerHeight)
+        header.style.visibility = header.style.visibility === 'hidden' && 'visible';
+      else header.style.visibility = 'hidden';
+
+      if (scrollPos + 100 >= window.innerHeight) navbar.classList.add('bg-active');
+      else navbar.classList.remove('bg-active');
+      
   
       (function navSmoothScrolling() {
         const internalLinks = document.querySelectorAll('a[href^="#"]');
@@ -425,6 +508,27 @@ const a = Math.floor(Math.random() * 11) + 1;
         }
       })();
     }
+  
+    render() {
+      return (
+        <React.Fragment>
+          <Menu toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
+          <Nav toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
+          <Header />
+          <About />
+          <Creative />
+          <Showroom />
+          <Roadmap />
+          <Contact/>
+          
+        </React.Fragment>
+      );
+    }
+  
+    componentDidMount() {
+      window.addEventListener('scroll', this.handleScroll);
+    }
+    
   }
   
   const root = ReactDOM.createRoot(document.getElementById("app"));
