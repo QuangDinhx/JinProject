@@ -20,6 +20,7 @@
   "homepage": "https://github.com/QuangDinhx/JinProject#readme",
   "dependencies": {
     "@google/model-viewer": "^1.12.0",
+    "@jaames/iro": "^5.5.2",
     "clean-webpack-plugin": "^4.0.0",
     "gsap": "^3.10.4",
     "internal-ip": "^7.0.0",
@@ -27,6 +28,8 @@
     "portfinder-sync": "^0.0.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0",
     "request": "^2.79.0",
     "swiper": "^7.3.1"
   },

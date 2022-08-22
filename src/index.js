@@ -1,5 +1,6 @@
 import "@google/model-viewer/dist/model-viewer";
 import React, { useEffect, useState } from 'react'
+import {BrowserRouter as Router, Route, Link, Routes, BrowserRouter} from 'react-router-dom';
 import ReactDOM from 'react-dom/client'
 // swiper
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,7 +14,10 @@ import './subdir/style.scss'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 import hpb from './assets/headphone-about.jpg'
 import opl from './assets/opensea-logo.png'
-import gif from './subdir/bg-3.gif'
+import hpc from './assets/hp-creative.png'
+import CreativeComp from "./creative/index.js";
+import ShowroomComp from "./showroom/index.js";
+
 
 
 const a = Math.floor(Math.random() * 11) + 1;
@@ -129,7 +133,7 @@ const a = Math.floor(Math.random() * 11) + 1;
         
         for(let i = 0;i < 4;i++){
           let a = listNumber.pop();
-          console.log(a);
+          
           list.push(require(`./assets/headphoneBaner/new (${a}).glb`).default)
         }
         setGlbs(list);
@@ -242,7 +246,7 @@ const a = Math.floor(Math.random() * 11) + 1;
               var se = setInterval(function() {
                   i++;
                   document.getElementsByClassName('wrapper')[0].innerHTML = str.slice(0, i) + "|";
-                  if (i == str.length) {
+                  if (i == str.length || (document.body.scrollTop || document.documentElement.scrollTop) > 1700) {
                       clearInterval(se);
                       document.getElementsByClassName('wrapper')[0].innerHTML = str;
                   }
@@ -255,11 +259,13 @@ const a = Math.floor(Math.random() * 11) + 1;
       },[isTrigger])
       const listenToScroll = () => {
         let heightToHideFrom = 600;
+        
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         if (winScroll > heightToHideFrom && isTrigger == false) {  
           setTrigger(true);
           
-        }  
+        }
+        
       };
       
 
@@ -268,27 +274,28 @@ const a = Math.floor(Math.random() * 11) + 1;
           {isTrigger&&
             <div className="wrapper">
             <article>
+              
               <div className="title">
                 <h3>What is DEZAIN ?</h3>
                 <p className="separator" />
               </div>
               
-                <div className="desc full">
-                <h4 className="subtitle">DEZAIN is a range of services offered as NFT.</h4>
-                <div>
-                  <img>
-                    {/* them image o day */}
-                  </img>
-                  <p>
-                    DEZAIN allows you to upload and edit 3d model files in a simple way 
-                    that anyone can do it. Also you can admire your edited model in 
-                    different ways. Even if you don't own our NFT, you will still be able to 
-                    use most of the features but with your contribution NFT will unlock 
-                    more cool features and help us develop more features other in the future.
-                  </p>
-                </div>
-                
-                </div>
+              <div className="desc full">
+              <h4 className="subtitle">DEZAIN is a range of services offered as NFT.</h4>
+              <div>
+                <img>
+                  {/* them image o day */}
+                </img>
+                <p>
+                  DEZAIN allows you to upload and edit 3d model files in a simple way 
+                  that anyone can do it. Also you can admire your edited model in 
+                  different ways. Even if you don't own our NFT, you will still be able to 
+                  use most of the features but with your contribution NFT will unlock 
+                  more cool features and help us develop more features other in the future.
+                </p>
+              </div>
+              
+              </div>
               
               
               <div className="title">
@@ -349,8 +356,62 @@ const a = Math.floor(Math.random() * 11) + 1;
    ***********************/
   
   const Creative = props => {
+    const [isActivce,setActive] = useState(false);
+    useEffect(()=>{
+      window.addEventListener("scroll", listenToScroll);
+      
+      return () => window.removeEventListener("scroll", listenToScroll); 
+      
+
+    },[])
+    const listenToScroll = () => {
+      let heightToHideFrom = 2000;
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      
+      if (winScroll > heightToHideFrom && isActivce == false) {  
+        setActive(true);
+        
+      }
+    };
+
     return(
       <section id="creative">
+        {isActivce&&
+          <div className="content">
+            <div className="hpImg">
+              <img src={hpc} id="image"></img>
+            </div>
+            <div className="container">
+              <div className="title">
+                  <h3>3D editing tools</h3>
+                  <p className="separator" />
+                </div>
+                
+                <div className="desc full">
+            
+                <div>
+                  
+                  <p>
+                  Access to a very useful and simple set of 3D editing tools. 
+                  With our toolkit, you can create and edit any 3D model you want according to your imagination and your creative. And download it for free.
+                  </p>
+                </div>
+                
+                </div>
+              {/* <h1>
+                <span className="line">Access a helfull 3D editing tools</span>
+                <span className="line">With our toolkit, you can create and edit any 3D model you want and</span>
+                <span className="line">
+                  Download it for <span className="color">free</span>.
+                </span>
+              </h1> */}
+              <div className="buttons">
+                <Link to="/creative"><button className="custom-btn btn-9">Try it</button></Link>
+                
+              </div>
+            </div>
+          </div>
+        }
         
       </section>
     )
@@ -363,8 +424,56 @@ const a = Math.floor(Math.random() * 11) + 1;
    ***********************/
   
   const Showroom = props => {
+    const [isActivce,setActive] = useState(false);
+    useEffect(()=>{
+      window.addEventListener("scroll", listenToScroll);
+      
+      return () => window.removeEventListener("scroll", listenToScroll); 
+      
+
+    },[])
+    const listenToScroll = () => {
+      let heightToHideFrom = 3080;
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      
+      if (winScroll > heightToHideFrom && isActivce == false) {  
+        setActive(true);
+        
+      }
+    };
     return (
-      <div></div>
+      <section id="showroom">
+          {isActivce&&
+          <div className="content">
+            <div className="container">
+              <div className="title">
+                  <h3>3D Showroom Demo</h3>
+                  <p className="separator" />
+                </div>
+                
+                <div className="desc full">
+            
+                <div>
+                  
+                  <p>
+                  A place where you can upload or store any 3d models you just created with our tool. A perfect place to revisit your amazing creations.
+                  Also if you are curious what your NFT looks like you can join here too, we have a special slot for it.
+                  </p>
+                </div>
+                
+                </div>
+  
+              <div className="buttons">
+                <a href="gg.com"><button className="custom-btn btn-2">Try Demo</button></a>
+              </div>
+            </div>
+            <div className="hpImg">
+              <img src={hpc} id="image"></img>
+            </div>
+            
+          </div>
+        }
+      </section>
     );
   };
   
@@ -379,6 +488,8 @@ const a = Math.floor(Math.random() * 11) + 1;
       <div></div>
     );
   };
+
+
   const Contact = props => {
     return (
       <section id="contact">
@@ -511,17 +622,40 @@ const a = Math.floor(Math.random() * 11) + 1;
   
     render() {
       return (
-        <React.Fragment>
-          <Menu toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
-          <Nav toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
-          <Header />
-          <About />
-          <Creative />
-          <Showroom />
-          <Roadmap />
-          <Contact/>
+        <BrowserRouter forceRefresh={true}>
           
-        </React.Fragment>
+            
+            <Routes>
+              <Route path="/creative" element={<CreativeComp />} />
+              <Route path="/showroom" element={<ShowroomComp />} />
+              <Route path="/" element={
+                <React.Fragment>
+                <Menu toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
+                <Nav toggleMenu={this.toggleMenu} showMenu={this.state.menuState} />
+                <Header />
+                <About />
+                <Creative />
+                <Showroom />
+                <Roadmap />
+                <Contact/>
+                
+                </React.Fragment>
+              } />
+
+              <Route path="*"
+                element={
+                <div>
+                  <h2>404 Page not found etc</h2>
+                </div>
+                }
+              />
+
+            </Routes>
+        
+        </BrowserRouter>
+
+      
+        
       );
     }
   

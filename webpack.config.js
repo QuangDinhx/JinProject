@@ -14,10 +14,13 @@ module.exports = {
     {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
-        publicPath: "",
+        publicPath: "/",
         assetModuleFilename: "assets/[name][ext][query]",
         clean: true,
         
+    },
+    devServer: {
+      historyApiFallback: true,
     },
     plugins: [
     //   new CopyWebpackPlugin({
