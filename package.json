@@ -19,8 +19,13 @@
   },
   "homepage": "https://github.com/QuangDinhx/JinProject#readme",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@google/model-viewer": "^1.12.0",
     "@jaames/iro": "^5.5.2",
+    "@react-navigation/elements": "^1.3.5",
     "clean-webpack-plugin": "^4.0.0",
     "gsap": "^3.10.4",
     "internal-ip": "^7.0.0",
@@ -30,6 +35,7 @@
     "react-dom": "^18.1.0",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
+    "react-string-replace": "^1.1.0",
     "request": "^2.79.0",
     "swiper": "^7.3.1"
   },

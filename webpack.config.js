@@ -10,6 +10,7 @@ module.exports = {
         resource: path.resolve(__dirname, "src/assets"),
       },
     },
+    
     output:
     {
         filename: '[name].bundle.js',
