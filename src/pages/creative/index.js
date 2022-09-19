@@ -1,26 +1,52 @@
-import React, {Component, useEffect, useState, } from 'react'
+import React, { Component, useEffect, useState, } from 'react'
 import * as THREE from 'three'
 import { ToolMenu } from './components/toolMenu'
+import { ContextMenu } from './components/right-click';
+import './style.scss'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
+
+const menuItems = [
+    
+  {
+    display: 'Copy',
+    icon: <FontAwesomeIcon icon={faCopy} />,
+    event:()=>{console.log('isCopy')},
+  },
+  
+];
 
 class CreativeComp extends React.Component {
   constructor() {
     super();
     this.state = {
-      scene:null
+      scene: null,
+      fileInputs: [],
+      target:".sidebarAll",
+      menuItems:menuItems,
+      mode:'light'
     };
-    this.update=this.update.bind(this);
+    this.update = this.update.bind(this);
   }
+  componentDidMount(){
+    
+  }
+
   update(props) {
-    this.setState(props);
+    this.setState(props,console.log(props));
+    
   }
+
 
   render() {
     return (
-        <div>
-          <ToolMenu data={this.state} setData={(props)=>{this.update(props)}}/>
-          <Vis data={this.state} setData={(props)=>{this.update(props)}}/>
-        </div>
+      <div className='CreativeComp'>
+        <ToolMenu data={this.state} setData={(props) => { this.update(props) }} />
+        <Vis data={this.state} setData={(props) => { this.update(props) }} />
+        <ContextMenu target={this.state.target} menuItems={this.state.menuItems} mode={this.state.mode}/>
+      </div>
     );
   }
 }
@@ -31,14 +57,14 @@ const Vis = (props) => {
   const mount = useRef(null)
   const [isAnimating, setAnimating] = useState(true)
   const controls = useRef(null)
-  
 
-  
+
+
   useEffect(() => {
     let width = mount.current.clientWidth
     let height = mount.current.clientHeight
     let frameId
-    
+
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -48,16 +74,16 @@ const Vis = (props) => {
 
     camera.position.z = 4
     scene.add(cube);
-    
+
     props.setData({
-      scene:scene
+      scene: scene
     })
-    
+
     renderer.setClearColor('#000000')
     renderer.setSize(width, height)
 
     const renderScene = () => {
-      
+
       renderer.render(scene, camera)
     }
 
@@ -69,7 +95,7 @@ const Vis = (props) => {
       camera.updateProjectionMatrix()
       renderScene()
     }
-    
+
     const animate = () => {
       cube.rotation.x += 0.01
       cube.rotation.y += 0.01
@@ -94,16 +120,16 @@ const Vis = (props) => {
     start()
 
     controls.current = { start, stop }
-    
+
     return () => {
       stop()
       window.removeEventListener('resize', handleResize);
-      if(mount.current != null){
+      if (mount.current != null) {
         mount.current.removeChild(renderer.domElement)
       }
-      
+
       scene.remove(cube);
-      props.setData({scene:scene});
+      props.setData({ scene: scene });
       geometry.dispose()
       material.dispose()
     }
@@ -116,7 +142,7 @@ const Vis = (props) => {
       controls.current.stop()
     }
   }, [isAnimating])
-  
+
   return <div className="vis" ref={mount} onClick={() => setAnimating(!isAnimating)} />
 }
 
