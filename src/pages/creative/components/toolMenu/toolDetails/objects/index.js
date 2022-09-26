@@ -51,6 +51,10 @@ export const Objects = props => {
         console.log(listObject)
         const newList = listObject.filter((item,i) => i !== index);
         setListObject(newList);
+        const newfileInputs = props.data.fileInputs.filter((item,i) => i != index);
+        props.setData({
+            fileInputs:newfileInputs
+        })
       }
 
     const [isGrid, setIsGrid] = useState(true);

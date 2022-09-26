@@ -65,7 +65,7 @@ export const Upload = props => {
   }
 
   function setProgressMaxValue(e) {
-    console.log(e);
+    
     if (e.lengthComputable) {
       setProgress({
         max: e.total
@@ -118,13 +118,14 @@ export const Upload = props => {
       let listFiles = [];
       listFiles = props.data.fileInputs;
       listFiles.push(file);
+      props.setData({
+        fileInputs:listFiles
+      })
       props.switchChanel(1);
     } 
     
     
-    // props.setData({
-    //   fileInputs:listFiles
-    // },console.log(props.data.fileInputs))
+    
   }
 
   useEffect(() => {
