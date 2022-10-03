@@ -214,9 +214,26 @@ p {
 .note-box.note {background: #F7B50A;}
 .note-box.alert {background: #d35757;}
 .note-box.idea {background: #F7B50A;}
-.note-box.success {background: #1fa67a;}
+.note-box.success {background: #1fa67a;
+  .note-text {
+    padding: 1.3em 1em;
+    display: table-cell;
+    h2 {
+      font-family: "Roboto", sans-serif;
+      font-size: 20px;
+      line-height: 1;
+      color: $theme;
+      margin-bottom: 0;
+    };
+    p {
+      font-family: "Roboto", sans-serif;
+      font-size: 16px;
+      color: #fff;
+    }
+  }
+}
 
-.note-box * {transition: 0.3s all ease-in-out;}
+.note-box * {transition: 1s all ease-in-out;}
 
 .note-box .note-text {
   padding: 1.3em 1em;

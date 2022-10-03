@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import reactStringReplace from 'react-string-replace';
 import ReactTooltip from 'react-tooltip';
 import './style.scss'
+import * as THREE from 'three';
+import { useDrag } from "@use-gesture/react";
 
 export const Upload = props => {
 
@@ -16,6 +18,7 @@ export const Upload = props => {
     max: 0,
     value: 0,
   });
+  
 
   function fileDragHover(e) {
     if (xhr.upload) {
@@ -117,25 +120,19 @@ export const Upload = props => {
     if(isGood){
       let listFiles = [];
       listFiles = props.data.fileInputs;
-      listFiles.push(file);
+      listFiles.push([file]);
       props.setData({
-        fileInputs:listFiles
+        fileInputs:listFiles,
+        isSearching:true
       })
-      props.switchChanel(1);
+      // props.switchChanel(1);
     } 
     
-    
-    
   }
-
-  useEffect(() => {
-
-  }, [data]);
-  useEffect(() => {
-
-  }, [isGood]);
   
 
+  
+  
   return (
     <div>
       <div className='uploader'>
@@ -147,6 +144,8 @@ export const Upload = props => {
           onDragOver={(e) => fileDragHover(e)}
           onDragLeave={(e) => fileDragHover(e)}
           onDrop={(e) => fileSelectHandler(e)}
+
+          
 
         >
           <img id="file-image" src={file ? window.URL.createObjectURL(file) : ""} alt="Preview" className={`${isGltf ? 'hidden' : (isGood ? '' : 'hidden')}`}></img>
@@ -170,7 +169,17 @@ export const Upload = props => {
         <ReactTooltip/>
       </div>
       {/* note */}
-      <div className="note-box idea">
+      {isGood?
+        <div className="note-box success">
+        <div className="note-icon"><span><i className="fa fa-check" aria-hidden="true"></i>
+        </span></div>
+        <div className="note-text">
+          <h2>Success!</h2>
+          <p>You have successfully uploaded the file. Now, you can now add objects at a location you specify.</p>
+        </div>
+      </div>
+      :
+        <div className="note-box idea">
         <div className="note-icon"><span><i className="fa fa-lightbulb-o" aria-hidden="true"></i>
         </span></div>
         <div className="note-text">
@@ -178,6 +187,8 @@ export const Upload = props => {
           <p>You can upload image files or 3D files as GLFB or GBL. We currently only support those 2 formats. Sorry for about thats, we will improve it in the future.</p>
         </div>
       </div>
+      }
+      
 
     </div>
 

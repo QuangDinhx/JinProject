@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { ToolMenu } from './components/toolMenu'
 import { ContextMenu } from './components/right-click';
 import { Object3D } from './components/3Dobjects';
+import { Loading } from './components/Loading';
 import './style.scss'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,26 +23,39 @@ class CreativeComp extends React.Component {
       groups:[],
       target:".sidebarAll",
       menuItems:menuItems,
-      mode:'light'
+      mode:'light',
+      isLoaded:false,
+      isSearching:false,
+      contextMenuPos:{x:0,y:0}
     };
     this.update = this.update.bind(this);
   }
   componentDidMount(){
-    
+    setTimeout(() => {
+      this.setState({ isLoaded: true });
+    }, 2500);
+  }
+
+  componentWillUnmount() {
+    this.setState({ isLoaded: false });
   }
 
   update(props) {
-    this.setState(props);
-    console.log(props)
+    if(this.state !== props){
+      this.setState(props);
+      // console.log(props)
+    }
+    
     
   }
 
   render() {
     return (
       <div className='CreativeComp'>
+        <Loading visible={!this.state.isLoaded}/>
         <ToolMenu data={this.state} setData={(props) => { this.update(props) }} />
-        <Object3D data={this.state} setData={(props) => { this.update(props) }} fileInputs={this.state.fileInputs} groups={this.state.groups}/>
-        <ContextMenu target={this.state.target} menuItems={this.state.menuItems} mode={this.state.mode}/>
+        <Object3D data={this.state} setData={(props) => { this.update(props) }} fileInputs={this.state.fileInputs} groups={this.state.groups} isSearching={this.state.isSearching}/>
+        <ContextMenu target={this.state.target} menuItems={this.state.menuItems} mode={this.state.mode} pos={this.state.contextMenuPos}/>
       </div>
     );
   }

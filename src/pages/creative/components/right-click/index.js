@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 export class ContextMenu extends React.Component {
-  constructor({ target = null, menuItems = [], mode = "light" }) {
+  constructor({ target , menuItems, mode,pos  }) {
     super();
     this.state = {
       target:target,
@@ -18,13 +18,15 @@ export class ContextMenu extends React.Component {
         y:0,
         w:0,
         h:0
-      }
+      },
+      pos:pos
     }
     this.root = React.createRef(null);
     this.initSetup = this.initSetup.bind(this);
     this.updateMode = this.updateMode.bind(this);
     this.updateTarget = this.updateTarget.bind(this);
     this.updateMenuItems = this.updateMenuItems.bind(this);
+    this.updatePos = this.updatePos.bind(this);
     this.menu = this.state.menuItems
   }
   
@@ -52,6 +54,9 @@ export class ContextMenu extends React.Component {
     if(this.props.menuItems !== prevProps.menuItems){
       this.updateMenuItems();
     }
+    if(this.props.pos !== prevProps.pos){
+      this.updatePos();
+    }
   }
 
   updateMode(){
@@ -76,8 +81,19 @@ export class ContextMenu extends React.Component {
     })
   }
 
+  updatePos(){
+    this.setState({
+      pos:this.props.pos
+    })
+    setTimeout(()=>{
+      this.initSetup()
+    },100)
+    
+  }
+
   initSetup(){
-    this.targetNode = this.getTargetNode();
+    if(this.state.target !== null){
+      this.targetNode = this.getTargetNode();
     
     this.targetNode.forEach((target) => {
       target.addEventListener("contextmenu", (e) => {
@@ -112,9 +128,7 @@ export class ContextMenu extends React.Component {
           clientX + this.state.setXY.w >= window.innerWidth
             ? window.innerWidth - this.state.setXY.w - 20
             : clientX;
-        console.log([positionX,positionY])
         
-            
             this.setState({
               setXY:{
                 x:positionX,
@@ -123,6 +137,46 @@ export class ContextMenu extends React.Component {
             })
       });
     });
+    }else{
+      {
+        this.setState({
+          isOpened:true
+        })
+        if(this.root!==null&&this.state.setXY.w !== this.root.scrollWidth){
+          this.setState({
+            setXY:{
+              w:this.root.scrollWidth
+            }
+          })
+        }
+        if(this.root!==null&&this.state.setXY.h !== this.root.scrollHeight){
+          this.setState({
+            setXY:{
+              h:this.root.scrollHeight
+            }
+          })
+        }
+  
+        const { x, y } = this.props.pos;
+  
+        const positionY =
+          y + this.state.setXY.h >= window.innerHeight
+            ? window.innerHeight - this.state.setXY.h - 20
+            : y;
+        const positionX =
+          x + this.state.setXY.w >= window.innerWidth
+            ? window.innerWidth - this.state.setXY.w - 20
+            : x;
+        
+            this.setState({
+              setXY:{
+                x:positionX,
+                y:positionY,
+              }
+            })
+      }
+    }
+    
   }
 
   componentWillUnmount() {

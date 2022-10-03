@@ -17,12 +17,21 @@ export const Objects = props => {
         let list = [];
 
         props.data.fileInputs.forEach((e, index) => {
-            let isGltf = (/\.(?=gltf|glb)/gi).test(e.name);
-            let object = {
-                ObjectName: e.name,
-                ObjectImage: isGltf ? <img src={cubelogo} /> : <img src={window.URL.createObjectURL(e)} />
+            if(e.length == 1){
+                let isGltf = (/\.(?=gltf|glb)/gi).test(e[0].name);
+                let object = {
+                ObjectName: e[0].name,
+                ObjectImage: isGltf ? <img src={cubelogo} /> : <img src={window.URL.createObjectURL(e[0])} />
+                }
+                list.push(object)
+            }else{
+                let object = {
+                ObjectName: `Object[${index}]`,
+                ObjectImage: <img src={cubelogo} /> 
+                }
+                list.push(object)
             }
-            list.push(object)
+            
         });
         setListObject(list)
     }, [])
@@ -48,7 +57,7 @@ export const Objects = props => {
     }
 
     function handleRemove(index) {
-        console.log(listObject)
+        
         const newList = listObject.filter((item,i) => i !== index);
         setListObject(newList);
         const newfileInputs = props.data.fileInputs.filter((item,i) => i != index);
