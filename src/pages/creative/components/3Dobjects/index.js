@@ -246,102 +246,44 @@ const Checkered = ({ floorPlane, isSearching, setIsSearching, setPosision, setIs
 
   );
 }
-export class Objects extends React.Component {
+export const Objects =({fs, gs, setIsDragging, floorPlane, Fpos, isSearchingDone, data, setData })=> {
 
-  constructor({ fs, gs, setIsDragging, floorPlane, Fpos, isSearchingDone, data, setData }) {
-    super();
-    this.state = {
-      pos: Fpos,
-      files: fs,
-      isSearchDone: isSearchingDone,
-      selected: [],
-      lockedList:[],
-      setIsDragging: setIsDragging,
-      floorPlane: floorPlane,
-
-    }
-    console.log(fs)
-    this.isDragging = false;
-    this.updatePos = this.updatePos.bind(this);
-    this.updateIsSearchingDone = this.updateIsSearchingDone.bind(this);
-    this.updateFiles = this.updateFiles.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
-    this.handleRemove = this.handleRemove.bind(this);
-    this.handleLock = this.handleLock.bind(this);
-    this.handleContextMenu = this.handleContextMenu.bind(this);
-    this.handleUnLock = this.handleUnLock.bind(this);
-
-  }
-
-  componentDidUpdate(prevProps) {
-    // console.log(this.props.fs);
-    // console.log(prevProps.fs)
-
-    if (this.props.fs !== prevProps.fs) {
-      this.updateFiles(this.props.fs);
-    }
-    if (this.props.Fpos !== prevProps.Fpos) {
-      this.updatePos(this.props.Fpos);
-    }
-    if (this.props.isSearchingDone !== prevProps.isSearchingDone) {
-      this.updateIsSearchingDone(this.props.isSearchingDone);
-    }
-
-  }
+  const [selected,setSelected] = useState([]);
+  const [lockedList,setLockedList] = useState([])
 
 
-  updatePos(Fpos) {
 
-    this.setState({
-      pos: Fpos
-    })
-  }
-
-  updateFiles(fs) {
-    this.setState({
-      files: fs
-    })
-  }
-
-  updateIsSearchingDone(value) {
-    this.setState({
-      isSearchDone: value
-    })
-  }
-
-  handleSelect(e, key) {
+  function handleSelect(e, key) {
     if (e.ctrlKey) {
-      let selectA = [...this.state.selected];
+      let selectA = [...selected];
 
       if (!selectA.includes(key)) {
         selectA.push(key)
       } else {
         selectA = selectA.filter((item) => item !== key);
       }
-      this.setState({
-        selected: selectA
-      })
+      setSelected(selectA)
 
 
     } else {
-      if (!this.state.selected.includes(key)) {
-        this.setState({ selected: [key] })
+      if (!selected.includes(key)) {
+        setSelected([key])
       } else {
-        this.setState({ selected: [] })
+        setSelected([])
       }
     }
   }
 
-  handleContextMenu(e, index) {
+  function handleContextMenu(e, index) {
     const menuItems = [
       {
-        display: this.state.lockedList.includes(index) ?'Unlock':'Lock',
-        icon: this.state.lockedList.includes(index) ? <FontAwesomeIcon icon={faLockOpen} /> : <FontAwesomeIcon icon={faLock} />,
+        display: lockedList.includes(index) ?'Unlock':'Lock',
+        icon: lockedList.includes(index) ? <FontAwesomeIcon icon={faLockOpen} /> : <FontAwesomeIcon icon={faLock} />,
         event: () => {
-          if (this.state.lockedList.includes(index)) {
-            this.handleUnLock(index)
+          if (lockedList.includes(index)) {
+            handleUnLock(index)
           } else {
-            this.handleLock(index)
+            handleLock(index)
           }
         },
       },
@@ -349,7 +291,7 @@ export class Objects extends React.Component {
         display: 'Delete',
         icon: <FontAwesomeIcon icon={faTrash} />,
         event: () => {
-          this.handleRemove(index)
+          handleRemove(index)
         },
       },
     ]
@@ -358,7 +300,7 @@ export class Objects extends React.Component {
       x: clientX,
     }
 
-    this.props.setData({
+    setData({
       menuItems: menuItems,
       target: null,
       contextMenuPos: {
@@ -368,57 +310,51 @@ export class Objects extends React.Component {
     })
   }
 
-  handleRemove(index) {
-    const newfileInputs = this.props.data.fileInputs.filter((item, i) => i !== index);
-    this.props.setData({
+  function handleRemove(index) {
+    const newfileInputs = data.fileInputs.filter((item, i) => i !== index);
+    setData({
       fileInputs: newfileInputs
     })
-    if(this.state.selected.includes(index)){
-      let updated = [...this.state.selected];
+    if(selected.includes(index)){
+      let updated = [...selected];
       updated = updated.filter((item, i) => item !== index);
-      this.setState({selected:updated})
+      setSelected(updated)
     }
-    if(this.state.lockedList.includes(index)){
-      let updated = [...this.state.lockedList];
+    if(lockedList.includes(index)){
+      let updated = [...lockedList];
       updated = updated.filter((item, i) => item !== index);
-      this.setState({lockedList:updated})
+      setLockedList(updated)
     }
   }
 
-  handleLock(index) {
-    let updated = [...this.state.lockedList];
+  function handleLock(index) {
+    let updated = [...lockedList];
     updated.push(index);
-    this.setState({lockedList:updated});
+    setLockedList(updated)
   }
 
-  handleUnLock(index) {
-    console.log(index)
-    console.log(this.state.lockedList)
-    let updated = [...this.state.lockedList];
+  function handleUnLock(index) {
+    let updated = [...lockedList];
     updated = updated.filter((item, i) => item !== index);
-    this.setState({lockedList:updated})
+    setLockedList(updated)
   }
 
-  render() {
+  
     return (
       <>
-        {this.state.files.map((e, i) => {
-          if (this.state.pos[i]) {
+        {fs.map((e, i) => {
             return (
               <group key={i}>
-                {this.state.pos[i] && <Object file={e} setIsDragging={this.state.setIsDragging} floorPlane={this.state.floorPlane} Fpos={this.state.pos[i]} isSearchDone={this.state.isSearchDone}
-                  status={this.state.selected.includes(i)} click={(e) => this.handleSelect(e, i)} isLocked={this.state.lockedList.includes(i)} handleContextMenu={(e) => this.handleContextMenu(e, i)} />}
+                {Fpos[i] && <Object file={e} setIsDragging={setIsDragging} floorPlane={floorPlane} Fpos={Fpos[i]} isSearchDone={isSearchingDone}
+                  status={selected.includes(i)} click={(e) => handleSelect(e, i)} isLocked={lockedList.includes(i)} handleContextMenu={(e) => handleContextMenu(e, i)} />}
               </group>
             )
-          } else {
-            return null
-          }
         })}
       </>
     )
-  }
-
 }
+
+
 
 
 const Object = ({ file, setIsDragging, floorPlane, Fpos, isSearchDone, status, click, isLocked, handleContextMenu }) => {
