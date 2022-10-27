@@ -5,10 +5,11 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { faArrowsUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
-import { faCube } from '@fortawesome/free-solid-svg-icons';
+import { faCube,faCubes } from '@fortawesome/free-solid-svg-icons';
 import { Upload } from './toolDetails/upload';
 import { Objects, Objetcs } from './toolDetails/objects';
 import { ContextMenu } from '../right-click';
+import { Geometrys } from './toolDetails/geometry'; 
 import './style.scss';
 
 
@@ -33,10 +34,10 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
-      display: 'Move',
-      icon: <FontAwesomeIcon icon={faArrowsUpDownLeftRight} />,
+      display: 'Geometrys',
+      icon: <FontAwesomeIcon icon={faCubes} />,
       to: '/',
-      content: ' ',
+      content: <Geometrys data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel} />,
       haveContent: true
     },
     {
@@ -116,6 +117,8 @@ export const ToolMenu = props => {
     setActiveIndex(curPath.length === 0 ? 0 : activeItem);
 
   }, [location]);
+
+  
 
   function updateMode() {
     if (mode == 'light') {

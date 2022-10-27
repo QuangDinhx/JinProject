@@ -19,36 +19,51 @@
     }
 }
 
+h1,h2,h3{
+    color: var(--item-color);
+}
+.btnnn{
+    margin-left: 83px;
+}
+
 .objectBg {
     border-radius: 8px;
     height: 588px;
     width: 248px;
     background-color: rgba(255, 255, 255, 0.2);
     margin-top: 10px;
-    overflow-y: auto;
     z-index: 1;
 }
+.leftArrow{
+  
+    padding: 1px 0px 6px 2px;
+    margin: 0;
+    display: flex;
+    outline: none;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border: none;
+    border-radius: 9px;
+    z-index: 200;
+    animation: fadeIn ease-in 500ms;
+    color: var(--item-color);
+    background-color:var(--menu-bg);
+   &:hover{
+        color: var(--item-bg-hover);
+        transform: scale(1.1);
+      }
+  }
 
-#style-1::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px var(--item-color);
-	border-radius: 10px;
-	background-color: var(--menu-bg);
-}
-
-#style-1::-webkit-scrollbar
-{
-	width: 6px;
-	background-color: var(--menu-bg);
-}
-
-#style-1::-webkit-scrollbar-thumb
-{
-	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px var(--item-color);
-	background-color: var(--menu-bg);
-}
-
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
 
 .object-grid {
     z-index: 2;
@@ -171,6 +186,9 @@
     &:hover {
         background: linear-gradient(0deg, rgba(0, 3, 255, 1) 0%, rgba(2, 126, 251, 1) 100%);
     }
+}
+.containergeo{
+    max-width: 227px;
 }
 
 .grid-list {

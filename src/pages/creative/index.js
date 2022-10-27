@@ -26,7 +26,8 @@ class CreativeComp extends React.Component {
       mode:'light',
       isLoaded:false,
       isSearching:false,
-      contextMenuPos:{x:0,y:0}
+      contextMenuPos:{x:0,y:0},
+      handleRemove:null,
     };
     this.update = this.update.bind(this);
   }
@@ -43,18 +44,19 @@ class CreativeComp extends React.Component {
   update(props) {
     if(this.state !== props){
       this.setState(props);
-      // console.log(props)
+      
     }
     
     
   }
 
   render() {
+    
     return (
       <div className='CreativeComp'>
         <Loading visible={!this.state.isLoaded}/>
         <ToolMenu data={this.state} setData={(props) => { this.update(props) }} />
-        <Object3D data={this.state} setData={(props) => { this.update(props) }} fileInputs={this.state.fileInputs} groups={this.state.groups} isSearching={this.state.isSearching}/>
+        {this.state.isLoaded && <Object3D data={this.state} setData={(props) => { this.update(props) }} />}
         <ContextMenu target={this.state.target} menuItems={this.state.menuItems} mode={this.state.mode} pos={this.state.contextMenuPos}/>
       </div>
     );

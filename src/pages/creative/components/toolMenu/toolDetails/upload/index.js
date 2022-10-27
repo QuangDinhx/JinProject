@@ -4,6 +4,8 @@ import ReactTooltip from 'react-tooltip';
 import './style.scss'
 import * as THREE from 'three';
 import { useDrag } from "@use-gesture/react";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshoptDecoder } from './decode';
 
 export const Upload = props => {
 
@@ -11,14 +13,30 @@ export const Upload = props => {
   let xhr = new XMLHttpRequest();
   const [data, setData] = useState(null);
   const [file, setFile] = useState(null);
+
   const [msg, setMsg] = useState('');
   const [isGood, setIsGood] = useState(false);
   const [isGltf, setIsGltf] = useState(false);
+  const [isImg, setIsImg] = useState(false);
+
+
   const [progress, setProgress] = useState({
     max: 0,
     value: 0,
   });
-  
+
+  function Restart() {
+    setData(null);
+    setFile(null);
+    setMsg('');
+    setIsGood(false);
+    setIsGltf(false);
+    setProgress({
+      max: 0,
+      value: 0,
+    })
+  }
+
 
   function fileDragHover(e) {
     if (xhr.upload) {
@@ -62,13 +80,14 @@ export const Upload = props => {
 
     var isGood = (/\.(?=gif|jpg|png|jpeg|gltf|glb)/gi).test(imageName);
     var isGltf = (/\.(?=gltf|glb)/gi).test(imageName)
+    var isImg = (/\.(?=jpg|png|jpeg)/gi).test(imageName);
     setIsGood(isGood);
     setIsGltf(isGltf);
-
+    setIsImg(isImg)
   }
 
   function setProgressMaxValue(e) {
-    
+
     if (e.lengthComputable) {
       setProgress({
         max: e.total
@@ -116,23 +135,75 @@ export const Upload = props => {
     }
   }
 
-  function addFileToObject(){
-    if(isGood){
-      let listFiles = [];
-      listFiles = props.data.fileInputs;
-      listFiles.push([file]);
-      props.setData({
-        fileInputs:listFiles,
-        isSearching:true
-      })
-      // props.switchChanel(1);
-    } 
-    
-  }
-  
+  function addFileToObject() {
+    if (props.data.isSearching == false) {
+      if (isGltf) {
+        let listFiles = [];
+        listFiles = props.data.fileInputs;
+        let gltfLink = window.URL.createObjectURL(file);
+        let modelF;
+        const loaderGLTF = new GLTFLoader();
+        loaderGLTF.setMeshoptDecoder(MeshoptDecoder);
+        loaderGLTF.load(gltfLink, function (gltf) {
 
-  
-  
+          modelF = gltf.scene;
+          let newFile = {
+            name: file.name,
+            isGltf: true,
+            model: modelF,
+            isImg:false,
+            Fpos: null
+          }
+          listFiles.push([newFile]);
+          props.setData({
+            fileInputs: listFiles,
+          })
+          props.setData({
+            isSearching: true
+          })
+
+          URL.revokeObjectURL(gltfLink);
+        }, function (xhrr) {
+
+        }, function (error) {
+          console.log(error)
+          URL.revokeObjectURL(gltfLink);
+        });
+
+
+
+        
+      }
+      if(isImg){
+        let listFiles = [...props.data.fileInputs];
+        let imageLink = window.URL.createObjectURL(file);
+        let texture = new THREE.TextureLoader().load(imageLink);
+        let newFile = {
+          name: file.name,
+          isGltf: false,
+          texture: texture,
+          link:imageLink,
+          isImg:true,
+          Fpos: null
+        }
+        listFiles.push([newFile]);
+        props.setData({
+          fileInputs: listFiles,
+        })
+        props.setData({
+          isSearching: true
+        })
+      }
+      
+
+      // props.switchChanel(1);
+    }
+
+  }
+
+
+
+
   return (
     <div>
       <div className='uploader'>
@@ -144,9 +215,6 @@ export const Upload = props => {
           onDragOver={(e) => fileDragHover(e)}
           onDragLeave={(e) => fileDragHover(e)}
           onDrop={(e) => fileSelectHandler(e)}
-
-          
-
         >
           <img id="file-image" src={file ? window.URL.createObjectURL(file) : ""} alt="Preview" className={`${isGltf ? 'hidden' : (isGood ? '' : 'hidden')}`}></img>
           <div id="start" className={`${isGood ? 'hidden' : ''}`}>
@@ -157,38 +225,39 @@ export const Upload = props => {
           </div>
           <div id="response" className={`${isGood ? '' : 'hidden'}`}>
             <div id="messages">{msg}</div>
-            <progress className="progress" id="file-progress" value={progress.value} max={progress.max} >
+            <progress className="progress" id="file-progress" value={(progress.value).toString()} max={progress.max} >
               <span>0</span>%
             </progress>
           </div>
+
         </label>
       </div>
 
       <div className='addObjectBtn' onClick={addFileToObject}>
-        <span className="btn" data-tip={file?'Add to Object':'You upload nothing!'} >Add</span>
-        <ReactTooltip/>
+        <span className="btn" data-tip={file ? ('Add to Object') : 'You upload nothing!'} >Add</span>
+        <ReactTooltip />
       </div>
       {/* note */}
-      {isGood?
+      {isGood ?
         <div className="note-box success">
-        <div className="note-icon"><span><i className="fa fa-check" aria-hidden="true"></i>
-        </span></div>
-        <div className="note-text">
-          <h2>Success!</h2>
-          <p>You have successfully uploaded the file. Now, you can now add objects at a location you specify.</p>
+          <div className="note-icon"><span><i className="fa fa-check" aria-hidden="true"></i>
+          </span></div>
+          <div className="note-text">
+            <h2>Success!</h2>
+            <p>You have successfully uploaded the file. Now, you can now add objects at a location you specify.</p>
+          </div>
         </div>
-      </div>
-      :
+        :
         <div className="note-box idea">
-        <div className="note-icon"><span><i className="fa fa-lightbulb-o" aria-hidden="true"></i>
-        </span></div>
-        <div className="note-text">
-          <h2>Note:</h2>
-          <p>You can upload image files or 3D files as GLFB or GBL. We currently only support those 2 formats. Sorry for about thats, we will improve it in the future.</p>
+          <div className="note-icon"><span><i className="fa fa-lightbulb-o" aria-hidden="true"></i>
+          </span></div>
+          <div className="note-text">
+            <h2>Note:</h2>
+            <p>You can upload image files or 3D files as GLFB or GBL. We currently only support those 2 formats. Sorry for about thats, we will improve it in the future.</p>
+          </div>
         </div>
-      </div>
       }
-      
+
 
     </div>
 

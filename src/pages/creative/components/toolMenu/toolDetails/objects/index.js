@@ -15,26 +15,32 @@ export const Objects = props => {
     }
     useEffect(() => {
         let list = [];
-
+        console.log(props.data.fileInputs)
         props.data.fileInputs.forEach((e, index) => {
             if(e.length == 1){
-                let isGltf = (/\.(?=gltf|glb)/gi).test(e[0].name);
+                
+                
                 let object = {
                 ObjectName: e[0].name,
-                ObjectImage: isGltf ? <img src={cubelogo} /> : <img src={window.URL.createObjectURL(e[0])} />
+                ObjectImage: e[0].isGltf ? <img src={cubelogo} /> : <img src={e[0].link} />,
+                ObjectIndex:index
                 }
                 list.push(object)
             }else{
-                let object = {
-                ObjectName: `Object[${index}]`,
-                ObjectImage: <img src={cubelogo} /> 
+                if(e.length >= 2){
+                    let object = {
+                    ObjectName: `Object[${index}]`,
+                    ObjectImage: <img src={cubelogo} />,
+                    ObjectIndex:index
+                    }
+                    list.push(object)
                 }
-                list.push(object)
+                
             }
             
         });
         setListObject(list)
-    }, [])
+    }, [props.data.fileInputs])
     useEffect(() => {
         setMode(props.data.mode);
     }, [props.data.mode])
@@ -58,12 +64,9 @@ export const Objects = props => {
 
     function handleRemove(index) {
         
-        const newList = listObject.filter((item,i) => i !== index);
+        const newList = listObject.filter((item,i) => item.ObjectIndex !== index);
         setListObject(newList);
-        const newfileInputs = props.data.fileInputs.filter((item,i) => i != index);
-        props.setData({
-            fileInputs:newfileInputs
-        })
+        props.data.handleRemove(index);
       }
 
     const [isGrid, setIsGrid] = useState(true);
@@ -85,11 +88,11 @@ export const Objects = props => {
                     <span>List</span>
                 </div>
             </button>
-            <div className='objectBg'>
+            <div className='objectBg' id='style-1'>
                 {listObject.length !== 0 ?
                     <div className={`${isGrid ? 'object-grid' : 'object-list'}`} >
                         {listObject.map((item, index) => (
-                            <div key={index} className={`object object--${index}`} onContextMenu={()=>setupRightClick(index)}>
+                            <div key={index} className={`object object--${index}`} onContextMenu={()=>setupRightClick(item.ObjectIndex)}>
                                 <div className="object-image">
                                     {item.ObjectImage}
                                 </div>

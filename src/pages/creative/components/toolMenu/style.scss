@@ -356,6 +356,8 @@
   }
 
   .content {
+    animation: fadeIn ease-in 300ms;
+    
     .circle {
       width: 20px;
       height: 20px;
