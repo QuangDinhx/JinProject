@@ -55,6 +55,8 @@ export const Object3D = props => {
   const [rotates, setRotates] = useState([]);
 
   const [scales, setScales] = useState([]);
+
+  const ref= useRef()
   
 
   
@@ -95,41 +97,36 @@ export const Object3D = props => {
 
   return (
     
-      <ScreenCapture onEndCapture={(e)=>{
-        console.log(e)
-        props.setData({
-          takeScreenShotImg:e
-        })
-      }}>
-        {({ onStartCapture }) => (
-          <div className='Object3D' >
-            
-            <Canvas gl={{ preserveDrawingBuffer: true }} onCreated={()=>{
-              if(props.data.takeScreenShot == null){
-                console.log('hello')
-                props.setData({
-                  takeScreenShot:()=>{
-                    onStartCapture()
-                  }
-                })
-              }
-            }
-            }>
-              <ambientLight intensity={0.5} />
-              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-              <pointLight position={[-10, -10, -10]} />
-              {fileInputs.length !== 0 && <Objects fs={fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales}
-                isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }}
-                setPos={(prop) => { setPos(prop) }} setRotates={(prop) => { setRotates(prop) }} setScales={(prop) => { setScales(prop) }} />}
-              <Checkered floorPlane={floorPlane} isSearching={isSearching} setIsSearching={setIsSearchingf} setPosision={addPos} setIsSearchingDone={setIsSearchingDonef} />
-              <PerspectiveCamera position={[0, 4, 8]} makeDefault />
-              <OrbitControls minZoom={10} maxZoom={50} enabled={!isDragging} />
-
-            </Canvas>
-          </div>
-        )}
-        </ScreenCapture>
       
+      
+      <div className='Object3D' >
+        <ScreenCapture onEndCapture={(e)=>{
+        props.setData({
+          takeScreenShotImg:<img src={e} id='imageToCapture'/>
+        })
+        }}
+        data={props.data} setData={(prop) => { props.setData(prop) }}
+        />
+        
+        
+        <div className='captureAll'>
+          <Canvas gl={{ preserveDrawingBuffer: true }} 
+        >
+          <ambientLight intensity={0.5} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+          <pointLight position={[-10, -10, -10]} />
+          {fileInputs.length !== 0 && <Objects fs={fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales}
+            isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }}
+            setPos={(prop) => { setPos(prop) }} setRotates={(prop) => { setRotates(prop) }} setScales={(prop) => { setScales(prop) }} />}
+          <Background data={props.data} setData={(prop) => { props.setData(prop) }}></Background>
+          <Checkered floorPlane={floorPlane} isSearching={isSearching} setIsSearching={setIsSearchingf} setPosision={addPos} setIsSearchingDone={setIsSearchingDonef} />
+          <PerspectiveCamera position={[0, 4, 8]} makeDefault />
+          <OrbitControls minZoom={10} maxZoom={50} enabled={!isDragging} />
+
+        </Canvas>
+        </div>
+      
+    </div>
     
 
   )
@@ -137,6 +134,59 @@ export const Object3D = props => {
 
 }
 
+
+const Background = props => {
+  const [material,setMaterial] = useState(null)
+  const plane = new THREE.BoxGeometry(100,100,100);
+
+  useEffect(()=>{
+    if(props.data.background !==null){
+      const texture = new THREE.TextureLoader().load(
+        props.data.background.props.src,
+        function ( texture ) {
+          // do something with the texture
+          
+        },
+        // Function called when download progresses
+        function ( xhr ) {
+            
+        },
+        // Function called when download errors
+        function ( xhr ) {
+            
+        }
+      )
+      texture.magFilter = THREE.LinearFilter;
+      texture.minFilter = THREE.LinearFilter;
+      const shader = THREE.ShaderLib[ "equirect" ];
+      const material = new THREE.ShaderMaterial({
+      uniforms: shader.uniforms,
+      fragmentShader: shader.fragmentShader,
+      vertexShader: shader.vertexShader,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      });
+      material.map = true;
+      material.uniforms.tEquirect.value = texture;
+      setMaterial(material);
+    }else{
+      setMaterial(null)
+    }
+    
+  },[props.data.background]);
+
+  
+
+  return (
+    <>
+      {material && 
+      <mesh geometry={plane} material={material}>
+      </mesh>
+    }
+    </>
+    
+  )
+}
 
 
 const Line = ({ start, end,color }) => {

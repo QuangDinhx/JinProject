@@ -6,6 +6,7 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { faArrowsUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
 import { faCube,faCubes } from '@fortawesome/free-solid-svg-icons';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
 import { Upload } from './toolDetails/upload';
 import { Objects, Objetcs } from './toolDetails/objects';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +14,7 @@ import { ContextMenu } from '../right-click';
 import { Geometrys } from './toolDetails/geometry'; 
 import { MyDownload } from './toolDetails/download';
 import { MyScreenShot } from './toolDetails/screenshot';
+import { MyBackground } from './toolDetails/background';
 
 import './style.scss';
 
@@ -52,6 +54,13 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
+      display: 'Background',
+      icon: <FontAwesomeIcon icon={faImages} />,
+      to: '/',
+      content: <MyBackground data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel} />,
+      haveContent: true
+    },
+    {
       display: 'Download',
       icon: <FontAwesomeIcon icon={faDownload} />,
       to: '/',
@@ -85,6 +94,11 @@ export const ToolMenu = props => {
   const indicatorRef = useRef();
   const location = useLocation();
   const [mode, setMode] = useState();
+  const [hideUI,setHideUI] = useState(false);
+
+  function handleUI(value){
+    setHideUI(value)
+  }
 
   useEffect(()=>{
     if(props.data.switchChanel == null){
@@ -94,6 +108,14 @@ export const ToolMenu = props => {
         }
       })
     }
+    if(props.data.handleHideUI == null){
+      props.setData({
+        handleHideUI: (value) =>{
+          handleUI(value)
+        }
+      })
+    }
+
   })
 
   function switchChanel(index) {
@@ -142,114 +164,119 @@ export const ToolMenu = props => {
 
 
   return (
-    <div className='sidebarAll' data-theme={mode}>
-      <div className={expanded ? "sidebar sidebar--expanded" : "sidebar"}
-        onMouseOver={() => setExpanded(true)}
-        onMouseOut={() => setExpanded(false)}
-        >
-        {expanded ?
-          <div className="sidebar__above">
-            <div className='sidebar__above__logo'>
-              DEZAIN
-            </div>
-            <div className='sidebar__above__switch' >
-              <div className="btn-container" data-mode={mode}>
-                <i className="fa fa-sun-o" aria-hidden="true"></i>
-                <label className="switch btn-color-mode-switch" >
-                  <input type="checkbox" name="color_mode" id="color_mode" checked={mode == 'dark'?true:false} onChange={updateMode}/>
-                  <label htmlFor="color_mode" data-on="Dark" data-off="Light" className="btn-color-mode-switch-inner" ></label>
-                </label>
-                <i className="fa fa-moon-o" aria-hidden="true"></i>
-              </div>
-            </div>
-          </div>
-
-          : ''}
-
-        <div ref={sidebarRef} className="sidebar__menu">
-
-          <div
-            ref={indicatorRef}
-            className={`sidebar__menu__indicator ${activeSlc ? (expanded ? 'active' : 'hide') : ''}`}
-            style={{
-              transform: `translateX(-50%) translateY(${activeIndex * stepHeight}px)`
-            }}
-          ></div>
-
-          <div className={`sidebar__container ${expanded ? '' : 'hide'}`}>
-            {sidebarNavItems.map((item, index) => (
-              <div key={`${index}`} className={`sidebar__menu__item ${activeIndex === index ? 'active' : ''}`} onClick={() => {
-                
-                setActiveSlc(false);
-                setShowContent(false);
-                setTimeout(()=>{
-                  setActiveIndex(index);
-                  setActiveSlc(true);
-                  setShowContent(true);
-                },200)
-
-              }}>
-                <div className={`sidebar__menu__item__icon ${expanded ? '' : 'hide'}`}>
-                  {item.icon}
-                </div>
-                {expanded ? <div className="sidebar__menu__item__text">
-                  {item.display}
-                </div> : ''}
-
-              </div>
-
-
-            ))}
-
-
-
-            <Link to={exitProps.to}>
-              <div className={`sidebar__menu__item`} style={{
-                position: 'absolute',
-                top: '70vh',
-              }}>
-                <div className={`sidebar__menu__item__icon ${expanded ? '' : 'hide'}`}>
-                  {exitProps.icon}
-                </div>
-                {expanded ? <div className="sidebar__menu__item__text">
-                  {exitProps.display}
-                </div> : ''}
-
-              </div>
-            </Link>
-
-          </div>
-
-
-
-        </div>
-      </div>
-
-      {
-
-
-        <div className={`contentContainer ${showContent && activeSlc ? (expanded ? "contentContainer--expanded" : ' ') : 'hide'}`}
-
-        >
-          <div className='triangle'
-            style={{
-              top: `${140 + activeIndex * stepHeight}px`
-            }}
-          ></div>
-          <div className='content'
-            
+    <>
+      {!hideUI &&
+        <div className='sidebarAll' data-theme={mode}>
+        <div className={expanded ? "sidebar sidebar--expanded" : "sidebar"}
+          onMouseOver={() => setExpanded(true)}
+          onMouseOut={() => setExpanded(false)}
           >
-            <button className="circle boxShadow" data-animation="fadeOut" data-remove="3000" onClick={() => {
-              setShowContent(false)
-            }}></button>
-            {sidebarNavItems[activeIndex] ? sidebarNavItems[activeIndex].content : ''}
+          {expanded ?
+            <div className="sidebar__above">
+              <div className='sidebar__above__logo'>
+                DEZAIN
+              </div>
+              <div className='sidebar__above__switch' >
+                <div className="btn-container" data-mode={mode}>
+                  <i className="fa fa-sun-o" aria-hidden="true"></i>
+                  <label className="switch btn-color-mode-switch" >
+                    <input type="checkbox" name="color_mode" id="color_mode" checked={mode == 'dark'?true:false} onChange={updateMode}/>
+                    <label htmlFor="color_mode" data-on="Dark" data-off="Light" className="btn-color-mode-switch-inner" ></label>
+                  </label>
+                  <i className="fa fa-moon-o" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+  
+            : ''}
+  
+          <div ref={sidebarRef} className="sidebar__menu">
+  
+            <div
+              ref={indicatorRef}
+              className={`sidebar__menu__indicator ${activeSlc ? (expanded ? 'active' : 'hide') : ''}`}
+              style={{
+                transform: `translateX(-50%) translateY(${activeIndex * stepHeight}px)`
+              }}
+            ></div>
+  
+            <div className={`sidebar__container ${expanded ? '' : 'hide'}`}>
+              {sidebarNavItems.map((item, index) => (
+                <div key={`${index}`} className={`sidebar__menu__item ${activeIndex === index ? 'active' : ''}`} onClick={() => {
+                  
+                  setActiveSlc(false);
+                  setShowContent(false);
+                  setTimeout(()=>{
+                    setActiveIndex(index);
+                    setActiveSlc(true);
+                    setShowContent(true);
+                  },200)
+  
+                }}>
+                  <div className={`sidebar__menu__item__icon ${expanded ? '' : 'hide'}`}>
+                    {item.icon}
+                  </div>
+                  {expanded ? <div className="sidebar__menu__item__text">
+                    {item.display}
+                  </div> : ''}
+  
+                </div>
+  
+  
+              ))}
+  
+  
+  
+              <Link to={exitProps.to}>
+                <div className={`sidebar__menu__item`} style={{
+                  position: 'absolute',
+                  top: '70vh',
+                }}>
+                  <div className={`sidebar__menu__item__icon ${expanded ? '' : 'hide'}`}>
+                    {exitProps.icon}
+                  </div>
+                  {expanded ? <div className="sidebar__menu__item__text">
+                    {exitProps.display}
+                  </div> : ''}
+  
+                </div>
+              </Link>
+  
+            </div>
+  
+  
+  
           </div>
         </div>
-
-
+  
+        {
+  
+  
+          <div className={`contentContainer ${showContent && activeSlc ? (expanded ? "contentContainer--expanded" : ' ') : 'hide'}`}
+  
+          >
+            <div className='triangle'
+              style={{
+                top: `${140 + activeIndex * stepHeight}px`
+              }}
+            ></div>
+            <div className='content'
+              
+            >
+              <button className="circle boxShadow" data-animation="fadeOut" data-remove="3000" onClick={() => {
+                setShowContent(false)
+              }}></button>
+              {sidebarNavItems[activeIndex] ? sidebarNavItems[activeIndex].content : ''}
+            </div>
+          </div>
+  
+  
+        }
+  
+      </div>
       }
-
-    </div>
+    </>
+    
   )
 };
 

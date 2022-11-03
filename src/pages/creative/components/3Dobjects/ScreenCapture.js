@@ -29,16 +29,14 @@ export class ScreenCapture extends Component {
 
   handleWindowResize = () => {
     const windowWidth =
-        document.documentElement.clientWidth ||
-        window.innerWidth ||
-        document.body.clientWidth;
+      document.documentElement.clientWidth ||
+      window.innerWidth ||
+      document.body.clientWidth;
     const windowHeight =
-        document.documentElement.clientHeight ||
-        window.innerHeight ||
-        document.body.clientHeight;
+      document.documentElement.clientHeight ||
+      window.innerHeight ||
+      document.body.clientHeight;
 
-    console.log([windowWidth,windowHeight])
-    
     this.setState({
       windowWidth,
       windowHeight
@@ -47,6 +45,13 @@ export class ScreenCapture extends Component {
 
   componentDidMount = () => {
     this.handleWindowResize();
+    if (this.props.data.takeScreenShot == null) {
+      this.props.setData({
+        takeScreenShot: () => {
+          this.handStartCapture()
+        }
+      })
+    }
     window.addEventListener("resize", this.handleWindowResize);
   };
 
@@ -54,7 +59,13 @@ export class ScreenCapture extends Component {
     window.removeEventListener("resize", this.handleWindowResize);
   };
 
-  handStartCapture = () => this.setState({ on: true });
+  handStartCapture = () => {
+    this.setState({ on: true });
+    if(this.props.data.handleHideUI !== null){
+      this.props.data.handleHideUI(true);
+    }
+    
+  };
 
   handleMouseMove = e => {
     const {
@@ -65,7 +76,7 @@ export class ScreenCapture extends Component {
       startY,
       borderWidth
     } = this.state;
-    
+
 
     let cropPositionTop = startY;
     let cropPositionLeft = startX;
@@ -148,6 +159,10 @@ export class ScreenCapture extends Component {
       isMouseDown: false,
       borderWidth: 0
     });
+    if(this.props.data.handleHideUI !== null){
+      this.props.data.handleHideUI(false);
+    }
+
   };
 
   handleClickTakeScreenShot = () => {
@@ -155,9 +170,9 @@ export class ScreenCapture extends Component {
       cropPositionTop,
       cropPositionLeft,
       cropWidth,
-      cropHeigth,startX,startY,endX,endY
+      cropHeigth, startX, startY, endX, endY
     } = this.state;
-    const body = document.querySelector(".capture");
+    const body = document.querySelector(".captureAll");
 
     html2canvas(body).then(canvas => {
       let croppedCanvas = document.createElement("canvas");
@@ -166,21 +181,21 @@ export class ScreenCapture extends Component {
       croppedCanvas.width = cropWidth;
       croppedCanvas.height = cropHeigth;
 
-      
+
 
       let canvasWidth = canvas.width;
       let canvasHeight = canvas.height;
-      let ratioWidth = canvasWidth/window.innerWidth;
-      let ratioHeight = canvasHeight/window.innerHeight;
-      
-      
+      let ratioWidth = canvasWidth / window.innerWidth;
+      let ratioHeight = canvasHeight / window.innerHeight;
 
-      
-      
+
+
+
+
       croppedCanvasContext.drawImage(
         canvas,
-        cropPositionLeft*ratioWidth,
-        cropPositionTop*ratioHeight,
+        cropPositionLeft * ratioWidth,
+        cropPositionTop * ratioHeight,
         cropWidth,
         cropHeigth,
         0,
@@ -198,16 +213,6 @@ export class ScreenCapture extends Component {
     });
   };
 
-  renderChild = () => {
-    const { children } = this.props;
-
-    const props = {
-      onStartCapture: this.handStartCapture
-    };
-
-    if (typeof children === "function") return children(props);
-    return children;
-  };
 
   render() {
     const {
@@ -218,26 +223,31 @@ export class ScreenCapture extends Component {
       isMouseDown
     } = this.state;
 
-    if (!on) return this.renderChild();
-
     return (
-      <div
-      className="capture"
-        onMouseMove={this.handleMouseMove}
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-      >
-        {this.renderChild()}
-        
-        <div
-          className={`overlay ${isMouseDown && "highlighting"}`}
-          style={{ borderWidth }}
-        />
-        <div
-          className="crosshairs"
-          style={{ left: crossHairsLeft + "px", top: crossHairsTop + "px" }}
-        />
-      </div>
+      <>
+        {
+          on &&
+          <div
+            className="capture"
+            onMouseMove={this.handleMouseMove}
+            onMouseDown={this.handleMouseDown}
+            onMouseUp={this.handleMouseUp}
+          >
+
+            <div
+              className={`overlay ${isMouseDown && "highlighting"}`}
+              style={{ borderWidth }}
+            />
+            <div
+              className="crosshairs"
+              style={{ left: crossHairsLeft + "px", top: crossHairsTop + "px" }}
+            />
+          </div>
+
+        }
+      </>
+
+
     );
   }
 }

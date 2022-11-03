@@ -256,7 +256,7 @@ export const Upload = props => {
             <p>You can upload image files or 3D files as GLFB or GBL. We currently only support those 2 formats. Sorry for about thats, we will improve it in the future.</p>
           </div>
         </div>
-      }
+        }
 
 
     </div>

@@ -1,6 +1,7 @@
 {
   "name": "jinproject",
   "version": "1.0.0",
+  "proxy":"http://localhost:8080/",
   "description": "",
   "main": "./index.js",
   "scripts": {
@@ -31,6 +32,7 @@
     "@react-three/fiber": "^8.7.4",
     "@react-three/lgl": "^0.0.4",
     "clean-webpack-plugin": "^4.0.0",
+    "dotenv": "^16.0.3",
     "gltfpack": "^0.18.0",
     "gsap": "^3.10.4",
     "html2canvas": "^1.4.1",
@@ -38,6 +40,7 @@
     "internal-ip": "^7.0.0",
     "ip": "^1.1.8",
     "leva": "^0.9.34",
+    "mongodb": "^4.11.0",
     "portfinder-sync": "^0.0.2",
     "precise-ui": "^2.1.15",
     "react": "^18.2.0",
@@ -80,8 +83,8 @@
     "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",
     "url-loader": "^4.1.1",
-    "webpack": "^5.72.1",
+    "webpack": "^5.74.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0"
+    "webpack-dev-server": "^4.11.1"
   }
 }

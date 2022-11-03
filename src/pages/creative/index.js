@@ -9,6 +9,8 @@ import './style.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
+import JPG1 from './components/toolMenu/toolDetails/background/image/1.jpg'
+
 
 const menuItems = [
   
@@ -31,7 +33,9 @@ class CreativeComp extends React.Component {
       switchChanel:null,
       downloadTarget:null,
       takeScreenShot:null,
-      takeScreenShotImg:null
+      takeScreenShotImg:null,
+      background:null,
+      handleHideUI:null,
     };
     this.update = this.update.bind(this);
   }
