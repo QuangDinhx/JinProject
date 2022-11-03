@@ -23,12 +23,12 @@ h1,h2,h3{
     color: var(--item-color);
 }
 .btnnn{
-    margin-left: 83px;
+    margin-left: 76px;
 }
 
 .objectBg {
     border-radius: 8px;
-    height: 588px;
+    height: 78.5vh; 
     width: 248px;
     background-color: rgba(255, 255, 255, 0.2);
     margin-top: 10px;
@@ -153,6 +153,7 @@ h1,h2,h3{
     margin: auto;
 
     .text {
+        margin-bottom: 10px;
         font-size: 19px;
     }
 }
@@ -188,7 +189,17 @@ h1,h2,h3{
     }
 }
 .containergeo{
-    max-width: 227px;
+    max-width: 235px;
+    padding-left: 3px;
+}
+.viewer{
+    padding-top: 10px;
+    align-items: center;
+    border-radius: 8px;
+    height: 248px;
+    width: 231px;
+    border: 1px solid #000;
+    background-color: rgba(180, 231, 233, 0.5);
 }
 
 .grid-list {

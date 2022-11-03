@@ -18,13 +18,9 @@ import { faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { faObjectGroup } from '@fortawesome/free-solid-svg-icons';
 import { faUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
 import { faRotate } from '@fortawesome/free-solid-svg-icons';
-
-
-
-
-
-
-
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { ScreenCapture } from './ScreenCapture';
 
 
 // Drei is a really helpful library
@@ -59,9 +55,9 @@ export const Object3D = props => {
   const [rotates, setRotates] = useState([]);
 
   const [scales, setScales] = useState([]);
+  
 
-
-
+  
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
   function setIsSearchingf(value) {
@@ -82,7 +78,7 @@ export const Object3D = props => {
   }
 
   function addPos(value) {
-    console.log(value);
+    
     let a = [...pos];
     a.push([value])
     setPos(a)
@@ -93,24 +89,48 @@ export const Object3D = props => {
     c.push([[1, 1, 1]]);
     setScales(c);
   }
-
+  
+  
 
 
   return (
-    <div className='Object3D'>
-      <Canvas>
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        {fileInputs.length !== 0 && <Objects fs={fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales}
-          isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }}
-          setPos={(prop) => { setPos(prop) }} setRotates={(prop) => { setRotates(prop) }} setScales={(prop) => { setScales(prop) }} />}
-        <Checkered floorPlane={floorPlane} isSearching={isSearching} setIsSearching={setIsSearchingf} setPosision={addPos} setIsSearchingDone={setIsSearchingDonef} />
-        <PerspectiveCamera position={[0, 4, 8]} makeDefault />
-        <OrbitControls minZoom={10} maxZoom={50} enabled={!isDragging} />
+    
+      <ScreenCapture onEndCapture={(e)=>{
+        console.log(e)
+        props.setData({
+          takeScreenShotImg:e
+        })
+      }}>
+        {({ onStartCapture }) => (
+          <div className='Object3D' >
+            
+            <Canvas gl={{ preserveDrawingBuffer: true }} onCreated={()=>{
+              if(props.data.takeScreenShot == null){
+                console.log('hello')
+                props.setData({
+                  takeScreenShot:()=>{
+                    onStartCapture()
+                  }
+                })
+              }
+            }
+            }>
+              <ambientLight intensity={0.5} />
+              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+              <pointLight position={[-10, -10, -10]} />
+              {fileInputs.length !== 0 && <Objects fs={fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales}
+                isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }}
+                setPos={(prop) => { setPos(prop) }} setRotates={(prop) => { setRotates(prop) }} setScales={(prop) => { setScales(prop) }} />}
+              <Checkered floorPlane={floorPlane} isSearching={isSearching} setIsSearching={setIsSearchingf} setPosision={addPos} setIsSearchingDone={setIsSearchingDonef} />
+              <PerspectiveCamera position={[0, 4, 8]} makeDefault />
+              <OrbitControls minZoom={10} maxZoom={50} enabled={!isDragging} />
 
-      </Canvas>
-    </div>
+            </Canvas>
+          </div>
+        )}
+        </ScreenCapture>
+      
+    
 
   )
 
@@ -230,8 +250,10 @@ export const Objects = props => {
   const [extraRotate,setExtraRotate] = useState([]);
   const [extraScale,setExtraScale] = useState([]);
   const [selectEnable,setSelectEnable] = useState(true);
+  const [refSelect,setRefSelect] = useState(null);
   const groupRef = useRef();
-  useHelper(groupRef, box, 'blue')
+
+  const gl = useThree((state) => state.gl)
 
   useEffect(() => {
     if (props.data.handleRemove == null) {
@@ -241,11 +263,34 @@ export const Objects = props => {
         }
       })
     }
-
+    
+    
   })
 
 
-
+  function handleCopy(index,ref){
+    if (props.data.isSearching == false) {
+        console.log('isCopy')
+        let listFiles = [];
+        listFiles = props.data.fileInputs;
+        
+        let newFile = {
+          name: `Clone[${index}]`,
+          isGltf: true,
+          model: ref,
+          isImg:false,
+          Fpos: null
+        }
+        listFiles.push([newFile]);
+        props.setData({
+          fileInputs: listFiles,
+        })
+        props.setData({
+          isSearching: true
+        })
+       
+    }
+  }
 
   function handleSelect(e, key) {
     if(selectEnable){
@@ -280,8 +325,9 @@ export const Objects = props => {
     }
   }
 
-  function handleContextMenu(e, index) {
+  function handleContextMenu(e, index,ref) {
     
+    if(props.data.isSearching == false){
       const menuItems1 = [
         {
           display: lockedList.includes(index) ? 'Unlock' : 'Lock',
@@ -294,6 +340,7 @@ export const Objects = props => {
             }
           },
         },
+        
         {
           display: 'Delete',
           icon: <FontAwesomeIcon icon={faTrash} />,
@@ -313,7 +360,8 @@ export const Objects = props => {
               setSelectEnable((false))
             }
           },
-        }, {
+        }, 
+        {
           display: (enabled.includes(index) && mode == 'rotate') ? 'Cancel Rotate' : 'Rotate',
           icon: <FontAwesomeIcon icon={faRotate} />,
           event: () => {
@@ -325,7 +373,8 @@ export const Objects = props => {
               setSelectEnable((false))
             }
           },
-        }, {
+        }, 
+        {
           display: (enabled.includes(index) && mode == 'scale') ? 'Cancel Scale' : 'Scale',
           icon: <FontAwesomeIcon icon={faDownLeftAndUpRightToCenter} />,
           event: () => {
@@ -336,6 +385,20 @@ export const Objects = props => {
               handleEnableScale(index)
               setSelectEnable((false))
             }
+          },
+        },
+        {
+          display: 'Download',
+          icon: <FontAwesomeIcon icon={faDownload} />,
+          event: () => {
+            handleDownload(ref)
+          },
+        },
+        {
+          display: 'Copy',
+          icon: <FontAwesomeIcon icon={faCopy} />,
+          event: () => {
+            handleCopy(index,ref)
           },
         },
       ]
@@ -358,6 +421,7 @@ export const Objects = props => {
       menuItems.push(menuItems1[0]);
       if(!lockedList.includes(index)){
         menuItems.push(menuItems1[1])
+        menuItems.push(menuItems1[6])
         if(selected.length <= 1){
           menuItems.push(menuItems1[2])
           let pos = extraPos.filter((e,i)=>e.index == index);
@@ -368,6 +432,9 @@ export const Objects = props => {
           menuItems.push(menuItems1[3])
           menuItems.push(menuItems1[4])
         }
+      }
+      if(selected.length <= 1){
+        menuItems.push(menuItems1[5])
       }
       
   
@@ -385,8 +452,17 @@ export const Objects = props => {
           y: clientY
         }
       })
+    }
+      
     
     
+  }
+
+  function handleDownload(ref){
+    props.setData({
+      downloadTarget:ref
+    })
+    props.data.switchChanel(4)
   }
 
   function handleRemove(index, selected) {
@@ -513,7 +589,7 @@ export const Objects = props => {
       addExtraScale(groupIndex,[1,1,1]);
       
     }
-    console.log(fileInputUp[groupIndex].length)
+    // console.log(fileInputUp[groupIndex].length)
     
 
     pushAr.map((item,index)=>{
@@ -534,8 +610,8 @@ export const Objects = props => {
         let Z= newZ;
 
         
-        console.log(currentExtraPos)
-        console.log(currentExtraRotate);
+        // console.log(currentExtraPos)
+        // console.log(currentExtraRotate);
         let a = currentExtraRotate[0];
         let b = currentExtraRotate[1];
         let c = currentExtraRotate[2];
@@ -555,9 +631,9 @@ export const Objects = props => {
       posUp[item] = []
 
       rotateUp[item].forEach((e, i) => {
-        console.log(currentExtraRotate);
+        // console.log(currentExtraRotate);
         let myrotate = [(e[0] - currentExtraRotate[0]), (e[1] - currentExtraRotate[1]), (e[2] - currentExtraRotate[2])]
-        console.log(myrotate);
+        // console.log(myrotate);
         rotateUp[groupIndex].push(myrotate);
       })
       rotateUp[item] = []
@@ -737,7 +813,7 @@ export const Objects = props => {
 
   return (
     
-      <group>
+      <animated.mesh  ref={groupRef}>
         {props.fs.map((e, i) => {
 
           return (
@@ -752,11 +828,12 @@ export const Objects = props => {
                     extraScale={extraScale}
                     extraRotate={extraRotate}
                     isSearchDone={props.isSearchingDone}
-                    status={selected.includes(i)} click={(e) => handleSelect(e, i)} focus={()=> handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e) => handleContextMenu(e, i)}
+                    status={selected.includes(i)} click={(e) => handleSelect(e, i)} focus={()=> handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e,ref) => handleContextMenu(e,i,ref)}
                     setExtraRotate={(value) => { addExtraRotate(i, value) }} 
                     setExtraScale={(value) => { addExtraScale(i, value) }}
                     setExtraPos={(value) => { addExtraPos(i, value) }} 
                     isEnabled={enabled.includes(i)} mode={mode} debug={debug}
+                    
                   />
                 </>
               }
@@ -767,7 +844,7 @@ export const Objects = props => {
                     Frotate={props.Frotate[i][0]}
                     Fscale={props.Fscale[i][0]}
                     isSearchDone={props.isSearchingDone}
-                    status={selected.includes(i)} click={(e) => handleSelect(e, i)} focus={()=> handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e) => handleContextMenu(e, i)} isGrouped={false}
+                    status={selected.includes(i)} click={(e) => handleSelect(e, i)} focus={()=> handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e,ref) => handleContextMenu(e,i,ref)} isGrouped={false}
                     setObjectPos={(value) => setObjectPos(i, 0, value)}
                     setObjectRotate={(value) => setObjectRotate(i, 0, value)}
                     setObjectScale={(value) => setObjectScale(i, 0, value)}
@@ -778,7 +855,7 @@ export const Objects = props => {
             </group>
           )
         })}
-      </group>
+      </animated.mesh >
   )
 
 
@@ -821,7 +898,7 @@ const GroupObject = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale,ex
         if (active && !isLocked && status) {
           event.ray.intersectPlane(floorPlane, planeIntersectPoint);
           setPos([planeIntersectPoint.x, hight, planeIntersectPoint.z]);
-          console.log(hight)
+          
           setIsDragging(active);
         }
         if (status && !isLocked) {
@@ -851,7 +928,7 @@ const GroupObject = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale,ex
 
   function handleUpdate() {
     if (isEnabled) {
-      console.log(transform)
+      
       if(mode == 'translate'){
         
         let vec = {
@@ -872,7 +949,7 @@ const GroupObject = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale,ex
         let finalRotateY = transform.current.rotationAxis.y !== 0 ? transform.current.rotationAngle : 0
         let finalRotateZ = transform.current.rotationAxis.z !== 0 ? transform.current.rotationAngle : 0
         let finalRotate = [finalRotateX, finalRotateY, finalRotateZ]
-        console.log(finalRotate)
+        // console.log(finalRotate)
         setExtraRotate(finalRotate);
       }
       if(mode =='scale'){
@@ -896,7 +973,7 @@ const GroupObject = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale,ex
         
       <animated.mesh  ref={boxRef}
         {...spring} {...bind()} onClick={(e) => {e.stopPropagation(); if (!isLocked && !isEnabled) { click(e);setIsDragging(true)  } }}
-        onContextMenu={(e) => {e.stopPropagation(); handleContextMenu(e) }}
+        onContextMenu={(e) => {e.stopPropagation(); handleContextMenu(e,boxRef.current.clone()) }}
         onPointerLeave={(e) => {if(!isEnabled)setIsDragging(false)}}
       
         
@@ -1032,6 +1109,7 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
   const planeGeo = new THREE.PlaneGeometry(1,1,1,1);
   
   const dragObjectRef = useRef();
+  const downloadObj = useRef()
 
   const [spring, api] = useSpring(() => ({
     // position: [0, 0, 0],
@@ -1117,13 +1195,14 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
             showX={isEnabled && !isLocked} showY={isEnabled && !isLocked} showZ={isEnabled && !isLocked}
             
             onObjectChange={() => { setIsDragging(true) }} onMouseUp={() => { setIsDragging(false); handleUpdate() }}
-            onContextMenu={(e) => { e.stopPropagation();handleContextMenu(e) }}
+            onContextMenu={(e) => { e.stopPropagation();handleContextMenu(e,downloadObj.current.clone()) }}
 
           >
             <animated.mesh castShadow ref={dragObjectRef} >
+              <mesh ref={downloadObj}>
               {
                 (file.model && file.isGltf) &&
-                <primitive ref={meshRef} object={file.model} scale={[0.5, 0.5, 0.5]} castShadow recieveShadow />
+                <primitive ref={meshRef} object={file.model}  castShadow recieveShadow />
               }
               {
                 (file.texture && file.isImg) &&
@@ -1142,6 +1221,8 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
                   
                 </mesh>
               }
+              </mesh>
+              
               <boxHelper args={[ref, 0xffff00]} {...spring} {...bind()}
                 visible={!isLocked && status && !isEnabled}
                 // visible={true}
@@ -1178,7 +1259,7 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
 
               {
                   (file.model && file.isGltf) &&
-                  <primitive ref={meshRef} object={file.model} scale={[0.5, 0.5, 0.5]} castShadow recieveShadow />
+                  <primitive ref={meshRef} object={file.model}  castShadow recieveShadow />
                 }
                 {
                   (file.texture && file.isImg) &&

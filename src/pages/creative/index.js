@@ -28,6 +28,10 @@ class CreativeComp extends React.Component {
       isSearching:false,
       contextMenuPos:{x:0,y:0},
       handleRemove:null,
+      switchChanel:null,
+      downloadTarget:null,
+      takeScreenShot:null,
+      takeScreenShotImg:null
     };
     this.update = this.update.bind(this);
   }
@@ -43,6 +47,7 @@ class CreativeComp extends React.Component {
 
   update(props) {
     if(this.state !== props){
+      
       this.setState(props);
       
     }

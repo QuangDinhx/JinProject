@@ -1,8 +1,9 @@
 
 
-import * as React from "react";
+import React, { useRef, useState } from 'react'
 import { render } from "react-dom";
 import * as THREE from 'three';
+import { Canvas, useFrame } from '@react-three/fiber'
 
 import {
   Container,
@@ -21,7 +22,13 @@ import box from '../geoImg/capsule.png'
 
 
 export const MyCapsuleGeometry = props => {
-  const [data, setData] = React.useState();
+  const [data, setData] = React.useState({
+    radius:1,
+    length:1,
+    capSegments:10,
+    radialSegments:20,
+    wireframe:false
+  });
   const [changed, setChanged] = React.useState(false);
   const [color,setColor] = React.useState({
     r: 255,
@@ -37,7 +44,7 @@ export const MyCapsuleGeometry = props => {
   const onChange = e => {
     if (e.value) {
       setData(e.value);
-      console.log(e)
+      
     }
     
   };
@@ -75,6 +82,14 @@ export const MyCapsuleGeometry = props => {
 
     return (
         <div className="containergeo" >
+            <div className='viewer'>
+            <Canvas>
+              <ambientLight intensity={0.5} />
+              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+              <pointLight position={[-10, -10, -10]} />
+              <Capsule wireframe={data.wireframe} radius={data.radius} length={data.length} capSegments={data.capSegments} radialSegments={data.radialSegments} color={color}/>
+            </Canvas>
+            </div>
             <Container>
             <Form
                 value={data}
@@ -84,19 +99,27 @@ export const MyCapsuleGeometry = props => {
                 
                 <h1>   Radius:</h1>
                 <div>
-                    <TextField name="radius" type="number" defaultValue="1" />
+                    
+                    <Slider name="radius" defaultValue={[1]} minimum={0} maximum={10} showTooltip />
                 </div>
                 <h1>   Length:</h1>
                 <div>
-                    <TextField name="length" type="number" defaultValue="1"/>
+                    
+                    <Slider name="length" defaultValue={[1]} minimum={0} maximum={10} showTooltip />
                 </div>
                 <h1>Cap Segments:</h1>
                 <div>
-                    <TextField name="capSegments" type="number" defaultValue="10"/>
+                    
+                    <Slider name="capSegments" defaultValue={[10]} minimum={0} maximum={20} showTooltip />
                 </div>
                 <h1>Radial Segments:</h1>
                 <div>
-                    <TextField name="radialSegments" type="number" defaultValue="20"/>
+                    
+                    <Slider name="radialSegments" defaultValue={[20]} minimum={0} maximum={30} showTooltip />
+                </div>
+                <div>
+                <h1>   Wireframe:</h1>
+                    <Toggle name='wireframe'/>
                 </div>
                 <h1>Color:</h1>
                 <div>
@@ -126,4 +149,23 @@ export const MyCapsuleGeometry = props => {
     );
 }
 
-
+const Capsule = (props) => {
+  const ref = useRef();
+  const [active, setActive] = useState(true)
+  
+  useFrame(() => {
+    if(ref.current && active) {
+      // rotates the object
+      ref.current.rotation.x = ref.current.rotation.y += 0.01
+    }
+  });
+  return (
+  <mesh
+    onClick={(e) => setActive(!active)}
+    position={[0,0,0]}
+    ref={ref}
+  >
+    <capsuleGeometry args={[props.radius, props.length, props.capSegments,props.radialSegments]} />
+    <meshStandardMaterial wireframe={props.wireframe} color={`#${props.color.r.toString(16)}${props.color.g.toString(16)}${props.color.b.toString(16)}`} />
+  </mesh>);
+}

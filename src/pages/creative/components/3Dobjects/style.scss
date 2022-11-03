@@ -1,8 +1,9 @@
 .Object3D{
-    position: relative;
-    top:-90vh;
+    position: absolute;
+    top:0;
+    left: 0;
     width: 100%;
-  height: 100%;
+    height: 100%;
   
   background: #11e8bb; /* Old browsers */
   background: -moz-linear-gradient(top,  #11e8bb 0%, #8200c9 100%); /* FF3.6-15 */
@@ -11,4 +12,81 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#11e8bb', endColorstr='#8200c9',GradientType=0 ); /* IE6-9 */
   overflow: hidden;
   
+}
+
+.crosshairs {
+  position: absolute;
+  width: 100%;
+  z-index: 2147483645;
+}
+
+.crosshairs.hidden {
+  display: none;
+}
+
+.crosshairs::before,
+.crosshairs::after {
+  content: "";
+  position: absolute;
+}
+
+.crosshairs::before {
+  height: 24px;
+  width: 2px;
+  background: #000;
+  top: -11px;
+}
+
+.crosshairs::after {
+  width: 24px;
+  height: 2px;
+  background: #000;
+  left: -11px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.capture{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay.highlighting {
+  background: none;
+  border-color: rgba(0, 0, 0, 0.5);
+  border-style: solid;
+}
+
+.modal__header {
+  display: flex;
+}
+
+.modal__header button {
+  margin-left: auto;
+  font-size: 30px;
+  border: none;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.modal__body {
+  padding: 20px;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.image__container {
+  overflow: auto;
 }

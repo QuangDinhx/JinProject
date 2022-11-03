@@ -1,4 +1,7 @@
 .sidebarAll {
+  top: 0;
+  left: 0;
+  position: absolute;
   --green: #6ef08e;
   --white: #eee6de;
   --menu-bg: linear-gradient(45deg,
@@ -356,6 +359,7 @@
   }
 
   .content {
+    height: 87vh;
     animation: fadeIn ease-in 300ms;
     
     .circle {

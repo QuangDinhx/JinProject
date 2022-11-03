@@ -8,8 +8,12 @@ import { faArrowsUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
 import { faCube,faCubes } from '@fortawesome/free-solid-svg-icons';
 import { Upload } from './toolDetails/upload';
 import { Objects, Objetcs } from './toolDetails/objects';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { ContextMenu } from '../right-click';
 import { Geometrys } from './toolDetails/geometry'; 
+import { MyDownload } from './toolDetails/download';
+import { MyScreenShot } from './toolDetails/screenshot';
+
 import './style.scss';
 
 
@@ -41,40 +45,27 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
-      display: 'Pant',
-      icon: <FontAwesomeIcon icon={faDownload} />,
+      display: 'Screen Shot',
+      icon: <FontAwesomeIcon icon={faImage} />,
       to: '/',
-      content: ' ',
-      haveContent: true
-    },
-    {
-      display: 'Pant',
-      icon: <FontAwesomeIcon icon={faDownload} />,
-      to: '/',
-      content: ' ',
-      haveContent: true
-    },
-    {
-      display: 'Pant',
-      icon: <FontAwesomeIcon icon={faDownload} />,
-      to: '/',
-      content: ' ',
+      content: <MyScreenShot data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel}/>,
       haveContent: true
     },
     {
       display: 'Download',
       icon: <FontAwesomeIcon icon={faDownload} />,
       to: '/',
-      content: ' ',
+      content: <MyDownload data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel} />,
       haveContent: true
     },
     {
-      display: 'Download',
+      display: 'Pant',
       icon: <FontAwesomeIcon icon={faDownload} />,
       to: '/',
       content: ' ',
       haveContent: true
     },
+    
 
 
   ]
@@ -95,10 +86,24 @@ export const ToolMenu = props => {
   const location = useLocation();
   const [mode, setMode] = useState();
 
+  useEffect(()=>{
+    if(props.data.switchChanel == null){
+      props.setData({
+        switchChanel: (index) =>{
+          switchChanel(index)
+        }
+      })
+    }
+  })
+
   function switchChanel(index) {
-    setActiveIndex(index);
-    setActiveSlc(true);
-    setShowContent(true);
+    setActiveSlc(false);
+    setShowContent(false);
+    setTimeout(()=>{
+      setActiveIndex(index);
+      setActiveSlc(true);
+      setShowContent(true);
+    },200)
   }
 
   useEffect(() => {
@@ -174,9 +179,14 @@ export const ToolMenu = props => {
           <div className={`sidebar__container ${expanded ? '' : 'hide'}`}>
             {sidebarNavItems.map((item, index) => (
               <div key={`${index}`} className={`sidebar__menu__item ${activeIndex === index ? 'active' : ''}`} onClick={() => {
-                setActiveIndex(index);
-                setActiveSlc(true);
-                setShowContent(true);
+                
+                setActiveSlc(false);
+                setShowContent(false);
+                setTimeout(()=>{
+                  setActiveIndex(index);
+                  setActiveSlc(true);
+                  setShowContent(true);
+                },200)
 
               }}>
                 <div className={`sidebar__menu__item__icon ${expanded ? '' : 'hide'}`}>
@@ -227,7 +237,7 @@ export const ToolMenu = props => {
             }}
           ></div>
           <div className='content'
-
+            
           >
             <button className="circle boxShadow" data-animation="fadeOut" data-remove="3000" onClick={() => {
               setShowContent(false)

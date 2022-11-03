@@ -1,8 +1,9 @@
 
 
-import * as React from "react";
+import React, { useRef, useState } from 'react'
 import { render } from "react-dom";
 import * as THREE from 'three';
+import { Canvas, useFrame } from '@react-three/fiber'
 
 import {
   Container,
@@ -21,7 +22,12 @@ import box from '../geoImg/block.png'
 
 
 export const MyBoxGeometry = props => {
-  const [data, setData] = React.useState();
+  const [data, setData] = React.useState({
+    width:1,
+    height:1,
+    depth:1,
+    wireframe:false
+  });
   const [changed, setChanged] = React.useState(false);
   const [color,setColor] = React.useState({
     r: 255,
@@ -37,7 +43,7 @@ export const MyBoxGeometry = props => {
   const onChange = e => {
     if (e.value) {
       setData(e.value);
-      console.log(e)
+      
     }
     
   };
@@ -75,6 +81,14 @@ export const MyBoxGeometry = props => {
 
     return (
         <div className="containergeo" >
+            <div className='viewer'>
+            <Canvas>
+              <ambientLight intensity={0.5} />
+              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+              <pointLight position={[-10, -10, -10]} />
+              <Box width={data.width} height={data.height} depth={data.depth} color={color} wireframe={data.wireframe}/>
+            </Canvas>
+            </div>
             <Container>
             <Form
                 value={data}
@@ -84,15 +98,23 @@ export const MyBoxGeometry = props => {
                 
                 <h1>   Width:</h1>
                 <div>
-                    <TextField name="width" type="number" defaultValue="1" />
+                    
+                    <Slider name="width" defaultValue={[1]} minimum={0} maximum={10} showTooltip />
                 </div>
                 <h1>   Height:</h1>
                 <div>
-                    <TextField name="height" type="number" defaultValue="1"/>
+                    
+                    <Slider name="height" defaultValue={[1]} minimum={0} maximum={10} showTooltip />
                 </div>
                 <h1>   Depth:</h1>
                 <div>
-                    <TextField name="depth" type="number" defaultValue="1"/>
+                    
+                    <Slider name="depth" defaultValue={[1]} minimum={0} maximum={10} showTooltip />
+                </div>
+                
+                <div>
+                <h1>   Wireframe:</h1>
+                    <Toggle name='wireframe'/>
                 </div>
                 <h1>   Color:</h1>
                 <div>
@@ -122,4 +144,25 @@ export const MyBoxGeometry = props => {
     );
 }
 
+
+const Box = (props) => {
+  const ref = useRef();
+  const [active, setActive] = useState(true)
+  
+  useFrame(() => {
+    if(ref.current&& active) {
+      // rotates the object
+      ref.current.rotation.x = ref.current.rotation.y += 0.01
+    }
+  });
+  return (
+  <mesh
+    onClick={(e) => setActive(!active)}
+    position={[0,0,0]}
+    ref={ref}
+  >
+    <boxGeometry args={[props.width, props.height, props.depth]} />
+    <meshStandardMaterial wireframe={props.wireframe} color={`#${props.color.r.toString(16)}${props.color.g.toString(16)}${props.color.b.toString(16)}`} />
+  </mesh>);
+}
 
