@@ -7,14 +7,18 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { faArrowsUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
 import { faCube,faCubes } from '@fortawesome/free-solid-svg-icons';
 import { faImages } from '@fortawesome/free-solid-svg-icons';
+import { faChessBoard } from '@fortawesome/free-solid-svg-icons';
 import { Upload } from './toolDetails/upload';
 import { Objects, Objetcs } from './toolDetails/objects';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { ContextMenu } from '../right-click';
 import { Geometrys } from './toolDetails/geometry'; 
 import { MyDownload } from './toolDetails/download';
 import { MyScreenShot } from './toolDetails/screenshot';
 import { MyBackground } from './toolDetails/background';
+import { MyCheckBoard } from './toolDetails/checkBoard';
+import { Options } from './toolDetails/options';
 
 import './style.scss';
 
@@ -47,6 +51,13 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
+      display: 'CheckBoard',
+      icon: <FontAwesomeIcon icon={faChessBoard} />,
+      to: '/',
+      content: <MyCheckBoard data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel}/>,
+      haveContent: true
+    },
+    {
       display: 'Screen Shot',
       icon: <FontAwesomeIcon icon={faImage} />,
       to: '/',
@@ -68,13 +79,12 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
-      display: 'Pant',
-      icon: <FontAwesomeIcon icon={faDownload} />,
+      display: 'Options',
+      icon: <FontAwesomeIcon icon={faGear} />,
       to: '/',
-      content: ' ',
+      content: <Options data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel} />,
       haveContent: true
     },
-    
 
 
   ]
@@ -94,11 +104,9 @@ export const ToolMenu = props => {
   const indicatorRef = useRef();
   const location = useLocation();
   const [mode, setMode] = useState();
-  const [hideUI,setHideUI] = useState(false);
+  
 
-  function handleUI(value){
-    setHideUI(value)
-  }
+  
 
   useEffect(()=>{
     if(props.data.switchChanel == null){
@@ -108,13 +116,7 @@ export const ToolMenu = props => {
         }
       })
     }
-    if(props.data.handleHideUI == null){
-      props.setData({
-        handleHideUI: (value) =>{
-          handleUI(value)
-        }
-      })
-    }
+    
 
   })
 
@@ -165,7 +167,7 @@ export const ToolMenu = props => {
 
   return (
     <>
-      {!hideUI &&
+      {!props.data.hideUI &&
         <div className='sidebarAll' data-theme={mode}>
         <div className={expanded ? "sidebar sidebar--expanded" : "sidebar"}
           onMouseOver={() => setExpanded(true)}
@@ -186,6 +188,7 @@ export const ToolMenu = props => {
                   <i className="fa fa-moon-o" aria-hidden="true"></i>
                 </div>
               </div>
+              <div className='Fps'></div>
             </div>
   
             : ''}

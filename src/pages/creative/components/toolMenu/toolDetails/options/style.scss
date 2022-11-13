@@ -1,0 +1,138 @@
+.myOptions {
+    --menu-bg: linear-gradient(45deg,
+            rgba(255, 255, 255, 0.45) 0%,
+            rgba(255, 255, 255, 0.85) 100%);
+    --menu-border: rgba(0, 0, 0, 0.08);
+    --item-border: rgba(0, 0, 0, 0.1);
+    --item-color: rgb(10, 20, 28);
+    --item-bg-hover: rgba(10, 20, 28, 0.09);
+    --item-bg: rgb(255, 255, 255);
+
+    &[data-theme="dark"] {
+        --menu-border: rgba(255, 255, 255, 0.08);
+        --menu-bg: linear-gradient(45deg,
+                rgba(10, 20, 28, 0.2) 0%,
+                rgba(10, 20, 28, 0.7) 100%);
+        --item-border: rgba(255, 255, 255, 0.1);
+        --item-color: #fff;
+        --item-bg-hover: rgba(255, 255, 255, 0.1);
+        --item-bg: rgb(0, 0, 0);
+    }
+    .optionTitle{
+        color:var(--item-color);
+        font-size: 26px;
+        text-align: center;
+        padding-top: 40px;
+    }
+    .Fps{
+        color:var(--item-color);
+        font-size: 20px;
+        margin: 15px;
+    }
+}
+
+.stats {
+    position: fixed;
+    top: 0px;
+    left: 50% !important;
+    cursor: pointer;
+    opacity: 0.9;
+    z-index: 10000;
+}
+
+.graphicsLevel {
+    -webkit-box-shadow: 0px 13px 23px -13px var(--menu-border);
+    width: 235px;
+    background-color: transparent;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.graphicContainer {
+    .title {
+        height: 56px;
+        width: 100%;
+        background-color: var(--item-bg);
+        color: var(--item-color);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: left;
+        line-height: 2;
+        font-size: 21px;
+        position: relative;
+        padding: 10px;
+        z-index: 2000;
+        border-radius: 4px;
+        margin-top: 2px;
+        transition: all .2s ease-in;
+    }
+
+    .title-text {
+        margin-left: 10px;
+    }
+
+    .title:hover {
+        cursor: pointer;
+        background-color: var(--item-bg-hover);
+    }
+
+    .title:active {
+        background-color: rgba(0, 0, 0, .55);
+    }
+
+    .contentG {
+        height: 30px;
+        width: 100%;
+        background-color: transparent;
+        border-radius: 4px;
+        color: var(--item-color);
+        font-size: 17px;
+        text-align: center;
+        position: relative;
+        z-index: 1000;
+        margin-top: -30px;
+        text-align: left;
+        transition: all 200ms cubic-bezier(0.600, -0.280, 0.735, 0.045);
+    }
+
+    .content-open {
+        margin-top: 0px;
+        height: 200px !important;
+        background-color: var(--item-border);
+        transition: all 350ms cubic-bezier(0.080, 1.090, 0.320, 1.275);
+    }
+
+    .content-text {
+        display: grid;
+        padding: 15px;
+        visibility: hidden;
+        opacity: 0;
+        overflow: auto;
+        transition: all .2s ease-in;
+    }
+
+    .content-text-open {
+        visibility: visible;
+        opacity: 1;
+        transition: all .8s ease-in;
+        .actice{
+
+        }
+    }
+
+    .fa-angle-down {
+        font-size: 20px;
+        color: var(--item-color);
+        transition: all .6s cubic-bezier(0.080, 1.090, 0.320, 1.275);
+    }
+
+    .fa-rotate-180 {
+        color: var(--item-color);
+    }
+
+    .arrow-wrapper {
+        position: absolute;
+        margin-left: 203px;
+    }
+
+}

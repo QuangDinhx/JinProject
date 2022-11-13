@@ -115,7 +115,9 @@
         text-overflow: ellipsis
     }
 }
-
+.containerCheckboard{
+    margin: 13px;
+}
 .object {
 
     border: 2px solid var(--item-border);
@@ -137,7 +139,7 @@
     padding: 30px;
     padding-top: 100px;
     text-align: center;
-
+    color: var(--item-color);
     margin: auto;
 
     .text {

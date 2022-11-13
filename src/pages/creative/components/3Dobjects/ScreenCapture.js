@@ -61,8 +61,10 @@ export class ScreenCapture extends Component {
 
   handStartCapture = () => {
     this.setState({ on: true });
-    if(this.props.data.handleHideUI !== null){
-      this.props.data.handleHideUI(true);
+    if(this.props.data.hideUI == false){
+      this.props.setData({
+        hideUI:true
+      })
     }
     
   };
@@ -159,8 +161,10 @@ export class ScreenCapture extends Component {
       isMouseDown: false,
       borderWidth: 0
     });
-    if(this.props.data.handleHideUI !== null){
-      this.props.data.handleHideUI(false);
+    if(this.props.data.hideUI == true){
+      this.props.setData({
+        hideUI:false
+      });
     }
 
   };

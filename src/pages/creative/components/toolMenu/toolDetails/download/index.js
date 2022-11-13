@@ -6,7 +6,8 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { PLYExporter } from 'three/examples/jsm/exporters/PLYExporter.js';
-import { Raytracer } from '@react-three/lgl'
+import { Raytracer } from '@react-three/lgl';
+
 
 import {
   Container,
@@ -87,6 +88,12 @@ export const MyDownload = props => {
     }
   }
 
+  function handlePopup(){
+    props.setData({
+      showPopup:true
+    })
+  }
+
   
 
 
@@ -115,13 +122,13 @@ export const MyDownload = props => {
                 <div className='text'>
                   By GLTF File:
                 </div>
-                <a href={gltfLink} download='new.glb'>
+                <a href={gltfLink} download='new.glb' onClick={handlePopup}>
                   <button className="custom-btn btn-6" ><span>Download</span></button>
                 </a>
                 <div className='text'>
                   By PLY File:
                 </div>
-                <a href={objLink} download='new.obj'>
+                <a href={objLink} download='new.obj' onClick={handlePopup}>
                   <button className="custom-btn btn-5" ><span>Download</span></button>
                 </a>
                 <div className='text'>

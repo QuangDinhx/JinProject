@@ -15,16 +15,12 @@ export const Contact = props => {
               <p className="subtitle">
                 Please, use the form below or send an email to {''}
                 <span className="mail">
-                  web
-                  <i className="fas fa-at at" />
-                  yagoestevez
-                  <i className="fas fa-circle dot" />
-                  com
+                  DEZAIN3DZZ@gmail.com
                 </span>
                 :
               </p>
             </div>
-            <SocialLinks />
+            {/* <SocialLinks /> */}
           </div>
           <form id="contact-form" action="#">
             <input placeholder="Name" name="name" type="text" required />

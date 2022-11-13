@@ -87,7 +87,7 @@ import { Roadmap } from "./components/roadmap";
             </div>
             <div className="rightContent">
               <div className="media-block">
-                <a className="media-link twiter-link" href="https://twitter.com/nasclubdebates">
+                <a className="media-link twiter-link" href="https://twitter.com/DEZAIN3D">
                     <img src="https://s3.amazonaws.com/files.enjin.com/851662/Footer_Images_Optimised/Twitter-min.png" />
                 </a>
                 <a className="media-link discord-link" href="https://discord.gg/aGNz5KE">

@@ -11,6 +11,23 @@
   background: linear-gradient(to bottom,  #11e8bb 0%,#8200c9 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#11e8bb', endColorstr='#8200c9',GradientType=0 ); /* IE6-9 */
   overflow: hidden;
+  --menu-bg: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.85) 100%);
+  --menu-border: rgba(0, 0, 0, 0.08);
+  --item-border: rgba(0, 0, 0, 0.1);
+  --item-color: rgb(10, 20, 28);
+  --item-bg-hover: rgba(10, 20, 28, 0.09);
+
+  &[data-theme="dark"] {
+    --menu-border: rgba(255, 255, 255, 0.08);
+    --menu-bg: linear-gradient(45deg,
+        rgba(10, 20, 28, 0.2) 0%,
+        rgba(10, 20, 28, 0.7) 100%);
+    --item-border: rgba(255, 255, 255, 0.1);
+    --item-color: #fff;
+    --item-bg-hover: rgba(255, 255, 255, 0.1);
+  }
   
 }
 
@@ -98,4 +115,306 @@
 
 .image__container {
   overflow: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.popup {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+  animation: fadeIn ease-in 300ms;
+  animation-fill-mode: forwards;
+  animation-duration: 300ms;
+  transition: 300ms ease-in-out;
+  &.hide {
+    visibility: hidden;
+    animation: fadeOut ease-in 300ms;
+  }
+}
+.popup_inner {
+  position: absolute;
+  left: 25%;
+  width: 50%;
+  height: auto;
+  top: 25%;
+  margin: auto;
+  background: linear-gradient(45deg,
+  rgba(255, 255, 255, 0.45) 0%,
+  rgba(255, 255, 255, 0.85) 100%);;
+  border-radius: 13px;
+  
+  .circle {
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 2px solid #E91E63;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    display: block;
+    margin-left: 96%;
+    margin-top: 10px;
+
+    &:after {
+      width: 12px;
+      height: 2px;
+      background-color: #E91E63;
+      content: "";
+      left: 50%;
+      top: 50%;
+      margin-left: -6px;
+      margin-top: -1px;
+      position: absolute;
+      transform: rotate(-45deg);
+
+    }
+
+    &:before {
+      left: 50%;
+      top: 50%;
+      margin-left: -6px;
+      margin-top: -1px;
+      width: 12px;
+      height: 2px;
+      background-color: #E91E63;
+      content: "";
+      position: absolute;
+      transform: rotate(45deg);
+
+    }
+
+    &.boxShadow {
+      transition: (box-shadow 200ms ease-out,
+          transform 200ms ease-out,
+          opacity 200ms ease-in-out);
+
+      &:after,
+      &:before {
+        transition: (400ms linear);
+      }
+    }
+
+    &.boxShadow:hover:not(.fadeOut) {
+      box-shadow: (0px 0px 0px 20px #E91E63 inset);
+      transform: (scale(0.8));
+
+      &:after {
+        background-color: #fff;
+        transform: (rotate(-45deg) scale(0.6));
+      }
+
+      &:before {
+        background-color: #fff;
+        transform: (rotate(45deg) scale(0.6));
+      }
+    }
+
+    .fadeOut {
+      opacity: 0;
+    }
+  }
+}
+.thankyou-wrapper{
+  width:100%;
+  height:auto;
+  margin:auto; 
+  padding:10px 0px 10px;
+
+  
+}
+
+.thankyou-wrapper h1{
+  font:100px "Overlock", Arial, Helvetica, sans-serif;
+  text-align:center;
+  color:#333333;
+  padding:0px 10px 10px;
+
+  img{
+    width: 58%;
+  }
+}
+.thankyou-wrapper p{
+  font-family: "Overlock", Arial, Helvetica, sans-serif;
+  font-size: 26px;
+  text-align:center;
+  color:#333333;
+  padding:5px 10px 10px;
+}
+.subcontent{
+  width: 100%;
+  display: block;
+  &.hide {
+    display: none;
+    animation: fadeOut ease-in 300ms;
+  }
+
+  a{
+    #buy{
+      margin-left: 40%;
+    }
+  }
+
+  #logo{
+    img{
+      display: block;
+      margin-left: 25%;
+      margin-bottom: 10px;
+      width: 50%;
+    }
+    
+  }
+  .notyf{
+    display: flex;
+    input{
+      margin-right: 10px;
+      margin-left: 10px;
+      font-size: 26px;
+      width: auto !important;
+      height: auto !important;
+    }
+    label{
+      font-family: "Overlock", Arial, Helvetica, sans-serif;
+      font-size: 20px;
+    }
+  }
+}
+.toolbox {
+  position: absolute;
+  z-index: 1;
+  bottom: 3%;
+  display: block;
+  left: 37.5%;
+  flex-flow: column wrap;
+}
+
+
+.mybtn {
+  font-family: "Overlock", Arial, Helvetica, sans-serif;
+  background: var(--menu-bg);
+  color: var(--item-color);
+  border: none;
+  font-size: 10px;
+  font-size: 1rem;
+  background-color: var(--menu-bg);
+  color: var(--item-color);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 14px 21px;
+  padding: 1.4rem 2.1rem;
+  border: 2px solid var(--menu-border);
+  transition: color 0.1s cubic-bezier(0.16, 0.08, 0.355, 1), 0.1s cubic-bezier(0.16, 0.08, 0.355, 1);
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 17px;
+  margin: 17px;
+  min-width: 7rem;
+  min-height: 3rem;
+  outline: none;
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  @media (min-width: 400px) {
+    width: auto;
+  }
+  @media (min-width: 800px) {
+    font-size: 1.1rem;
+    padding: 1rem 1.8rem;
+  }
+  &:hover {
+    background: var(--menu-bg);
+    border-color: var(--menu-border);
+    color: var(--item-color);
+  }
+}
+
+.btn-border {
+  background-color: transparent;
+  color: var(--item-color);
+}
+
+.btn-arrow {
+  position: relative;
+    transition: background-color 300ms ease-out;
+  span {
+    display: inline-block;
+    position: relative;
+    transition: all 300ms ease-out;
+    will-change: transform;
+  }
+  &:hover span {
+    transform: translate3d(-1rem, 0, 0);
+  }
+  svg {
+    position: absolute;
+    width: 1.1em;
+    color: var(--item-color);
+    right: 0px;
+    right: 0rem;
+    opacity: 0;
+    top: 50%;
+    transition: all 300ms ease-out;
+    will-change: right, opacity;
+    transform: rotatey(-180deg) translateY(-50%); 
+    * {
+      stroke-width: 5;
+      color: var(--item-color);
+    }
+  }
+  &:hover svg {
+    opacity: 1;
+    right: -2rem;
+  }
+}
+
+.revrese{
+  &:hover span {
+    transform: translate3d(1rem, 0, 0);
+  }
+  svg{
+    position: absolute;
+    color: var(--item-color);
+    width: 1.1em;
+    left: 0px;
+    left: 0rem;
+    opacity: 0;
+    top: 50%;
+    transition: all 300ms ease-out;
+    will-change: right, opacity;
+    transform:  translateY(-50%); 
+    * {
+      stroke-width: 5;
+      color: var(--item-color);
+    }
+
+  }
+  &:hover svg {
+    opacity: 1;
+    left:-2rem;
+  }
 }

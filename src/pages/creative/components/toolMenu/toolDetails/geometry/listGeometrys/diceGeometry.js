@@ -1,6 +1,6 @@
 
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState,useEffect } from 'react'
 import { render } from "react-dom";
 import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber'
@@ -19,6 +19,7 @@ import {
   ColorPicker
 } from "precise-ui";
 import box from '../geoImg/dice.png'
+import ReactTooltip from 'react-tooltip';
 
 
 export const MyDiceGeometry = props => {
@@ -46,32 +47,49 @@ export const MyDiceGeometry = props => {
     }
     
   };
+  const [isMax,setMax] = useState(false);
+  useEffect(()=>{
+    let isLimit = props.data.objectCount >= props.data.limitObjects;
+    setMax(isLimit)
+  },[props.data.objectCount])
 
   function handleCreate(e){
-    if (props.data.isSearching == false){
-      let listFiles = [...props.data.fileInputs];
-      let {radius,details} = e.data;
-      
-      let newFile = {
-        name: `dice[${listFiles.length}]`,
-        isGltf: false,
-        link:box,
-        geo: new THREE.DodecahedronGeometry(radius,details),
-        material:new THREE.MeshBasicMaterial({
-          color: `#${color.r.toString(16)}${color.g.toString(16)}${color.b.toString(16)}`,
-          
-        }),
-        isGeo:true,
-        Fpos: null
-      }
-      listFiles.push([newFile]);
-      props.setData({
-        fileInputs: listFiles,
-      })
-      props.setData({
-        isSearching: true
-      })
-    } 
+    
+    if(!isMax){
+      if (props.data.isSearching == false){
+        let listFiles = [...props.data.fileInputs];
+        let {radius,details} = e.data;
+        
+        let newFile = {
+          name: `dice[${listFiles.length}]`,
+          isGltf: false,
+          link:box,
+          geo: new THREE.DodecahedronGeometry(radius*0.5,details),
+          material:new THREE.MeshPhongMaterial({
+            color: `#${color.r.toString(16)}${color.g.toString(16)}${color.b.toString(16)}`,
+            
+          }),
+          material2:new THREE.MeshBasicMaterial({
+            color: `#${color.r.toString(16)}${color.g.toString(16)}${color.b.toString(16)}`,
+            
+          }),
+          isGeo:true,
+          Fpos: null
+        }
+        listFiles.push([newFile]);
+        props.setData({
+          fileInputs: listFiles,
+        })
+        props.setData({
+          isSearching: true
+        })
+        let count = props.data.objectCount + 1;
+        props.setData({
+          objectCount:count,
+        })
+      } 
+    }
+    
   }
   
   function changeColor(e){
@@ -123,7 +141,10 @@ export const MyDiceGeometry = props => {
                 </div>
 
                 <div className="btnnn">
-                    <Button  >Create</Button>
+                    <Button>
+                      <span data-tip={isMax?'You have got the limit':'Add to Object'}>Create</span>
+                      <ReactTooltip />
+                    </Button>
                 </div>
             </Form>
             
@@ -145,6 +166,7 @@ const Dice = (props) => {
   });
   return (
   <mesh
+    castShadow
     onClick={(e) => setActive(!active)}
     position={[0,0,0]}
     ref={ref}

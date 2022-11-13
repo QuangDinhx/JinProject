@@ -52,6 +52,7 @@ export const MyScreenShot = props => {
         a.href = resourse.props.src;
         a.click();
         a.remove();
+        handlePopup()
     }
 
     function handleDownloadasJPG(){
@@ -60,9 +61,14 @@ export const MyScreenShot = props => {
         a.href = resourse.props.src;
         a.click();
         a.remove();
+        handlePopup()
     }
 
-    
+    function handlePopup(){
+        props.setData({
+          showPopup:true
+        })
+      }
       
 
 

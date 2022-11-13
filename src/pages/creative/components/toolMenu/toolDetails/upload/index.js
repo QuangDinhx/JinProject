@@ -18,6 +18,11 @@ export const Upload = props => {
   const [isGood, setIsGood] = useState(false);
   const [isGltf, setIsGltf] = useState(false);
   const [isImg, setIsImg] = useState(false);
+  const [isMax,setMax] = useState(false);
+  useEffect(()=>{
+    let isLimit = props.data.objectCount >= props.data.limitObjects;
+    setMax(isLimit)
+  },[props.data.objectCount])
 
 
   const [progress, setProgress] = useState({
@@ -136,22 +141,66 @@ export const Upload = props => {
   }
 
   function addFileToObject() {
-    if (props.data.isSearching == false) {
-      if (isGltf) {
-        let listFiles = [];
-        listFiles = props.data.fileInputs;
-        let gltfLink = window.URL.createObjectURL(file);
-        let modelF;
-        const loaderGLTF = new GLTFLoader();
-        loaderGLTF.setMeshoptDecoder(MeshoptDecoder);
-        loaderGLTF.load(gltfLink, function (gltf) {
-
-          modelF = gltf.scene;
+    
+    if(!isMax){
+      if (props.data.isSearching == false) {
+        let count = props.data.objectCount + 1;
+        props.setData({
+          objectCount:count,
+        })
+        if (isGltf) {
+          let listFiles = [];
+          listFiles = props.data.fileInputs;
+          let gltfLink = window.URL.createObjectURL(file);
+          let modelF;
+          const loaderGLTF = new GLTFLoader();
+          loaderGLTF.setMeshoptDecoder(MeshoptDecoder);
+          loaderGLTF.load(gltfLink, function (gltf) {
+            gltf.scene.traverse( function( node ) {
+              if ( node.isMesh ) { 
+                  node.castShadow = true; 
+              }
+            } );
+            
+            modelF = gltf.scene;
+            let newFile = {
+              name: file.name,
+              isGltf: true,
+              model: modelF,
+              isImg:false,
+              Fpos: null
+            }
+            listFiles.push([newFile]);
+            props.setData({
+              fileInputs: listFiles,
+            })
+            props.setData({
+              isSearching: true
+            })
+            
+  
+            URL.revokeObjectURL(gltfLink);
+          }, function (xhrr) {
+  
+          }, function (error) {
+            console.log(error)
+            URL.revokeObjectURL(gltfLink);
+          });
+  
+  
+  
+          
+        }
+        if(isImg){
+          let listFiles = [...props.data.fileInputs];
+          let imageLink = window.URL.createObjectURL(file);
+          let texture = new THREE.TextureLoader().load(imageLink);
           let newFile = {
             name: file.name,
-            isGltf: true,
-            model: modelF,
-            isImg:false,
+            isGltf: false,
+            texture: texture,
+            link:imageLink,
+            isImg:true,
             Fpos: null
           }
           listFiles.push([newFile]);
@@ -161,43 +210,14 @@ export const Upload = props => {
           props.setData({
             isSearching: true
           })
-
-          URL.revokeObjectURL(gltfLink);
-        }, function (xhrr) {
-
-        }, function (error) {
-          console.log(error)
-          URL.revokeObjectURL(gltfLink);
-        });
-
-
-
+        }
+        
+  
         
       }
-      if(isImg){
-        let listFiles = [...props.data.fileInputs];
-        let imageLink = window.URL.createObjectURL(file);
-        let texture = new THREE.TextureLoader().load(imageLink);
-        let newFile = {
-          name: file.name,
-          isGltf: false,
-          texture: texture,
-          link:imageLink,
-          isImg:true,
-          Fpos: null
-        }
-        listFiles.push([newFile]);
-        props.setData({
-          fileInputs: listFiles,
-        })
-        props.setData({
-          isSearching: true
-        })
-      }
-      
-
-      // props.switchChanel(1);
     }
+    
+    
 
   }
 
@@ -234,7 +254,7 @@ export const Upload = props => {
       </div>
 
       <div className='addObjectBtn' onClick={addFileToObject}>
-        <span className="btn" data-tip={file ? ('Add to Object') : 'You upload nothing!'} >Add</span>
+        <span className="btn" data-tip={file ? (isMax?'You have got the limit':'Add to Object') : 'You upload nothing!'} >Add</span>
         <ReactTooltip />
       </div>
       {/* note */}

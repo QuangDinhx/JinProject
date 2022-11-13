@@ -88,7 +88,7 @@ export const About = props => {
                     <p>
                     If you don't already have one, you can check out our store on OpenSea. Check it now to enjoy service offers
                     </p>
-                    <a href="https://opensea.io/3DHeadphone"><button className="custom-btn btn-5" ><span>Buy now</span></button></a>
+                    <a href="https://opensea.io/DEZAIN3D"><button className="custom-btn btn-5" ><span>Buy now</span></button></a>
                     <a href="https://opensea.io/"><img src={opl} id="logo"></img></a>
                   </div>
                 </div>

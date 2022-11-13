@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import ReactTooltip from 'react-tooltip';
 
 export class ContextMenu extends React.Component {
   constructor({ target , menuItems, mode,pos  }) {
@@ -248,7 +249,16 @@ export class ContextMenu extends React.Component {
                   <div className='contextMenu-button-icon'>
                     {item.icon}
                   </div>
-                    {item.display}
+                    
+                  {item.mes?
+                    <>
+                      <span data-tip={item.mes}>{item.display}</span>
+                      <ReactTooltip />
+                    </>
+                  :
+                  <span>{item.display}</span>
+                  }
+                  
                 </button>
               </li>
 

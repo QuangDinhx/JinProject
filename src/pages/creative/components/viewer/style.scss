@@ -1,3 +1,93 @@
-html, body {
-    font-size: medium;
+.ObjectViewer{
+  top: 0;
+  right: 0;
+  position: absolute;
+  --menu-bg: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.85) 100%);
+  --menu-border: rgba(0, 0, 0, 0.08);
+  --item-border: rgba(0, 0, 0, 0.1);
+  --item-color: rgb(10, 20, 28);
+  --item-bg-hover: rgba(10, 20, 28, 0.09);
+  --item-bg:rgb(255, 255, 255);
+
+  &[data-theme="dark"] {
+    --menu-border: rgba(255, 255, 255, 0.08);
+    --menu-bg: linear-gradient(45deg,
+        rgba(10, 20, 28, 0.2) 0%,
+        rgba(10, 20, 28, 0.7) 100%);
+    --item-border: rgba(255, 255, 255, 0.1);
+    --item-color: #fff;
+    --item-bg-hover: rgba(255, 255, 255, 0.1);
+    --item-bg:rgb(0, 0, 0);
   }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.Rsidebar {
+  position: fixed;
+  background-image: var(--menu-bg);
+  top: 0;
+  right:0;
+  height: 100vh;
+  width: 300px;
+  transform: translateX(10px);
+  transition: 300ms ease-in-out;
+  z-index: 1;
+  border: 1px solid #000;
+  border-radius: 10px;
+  animation: fadeIn ease-in 300ms;
+  animation-fill-mode: forwards;
+  animation-duration: 300ms;
+
+  &.shrink {
+
+    background-size: 100%;
+    background-position: 0 0;
+    transform: translateX(276px);
+  }
+  &-viewButton {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    right: 281px;
+    top: 50vh;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+    transition: .3s ease-in-out;
+    color: var(--item-bg);
+    box-shadow: var(--item-border);
+    background-color: var(--item-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover { opacity: 0.8; }
+    svg { width: 30px; }
+    .shrink &{ 
+      transform: rotatey(-180deg); 
+    }
+  }
+}
