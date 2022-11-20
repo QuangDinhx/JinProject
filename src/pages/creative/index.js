@@ -54,10 +54,6 @@ class CreativeComp extends React.Component {
       limitObjects:15,
       objectCount:0,
       showFPS:false,
-      
-      
-      
-     
     };
     this.update = this.update.bind(this);
     this.handleCheckWindow = this.handleCheckWindow.bind(this);

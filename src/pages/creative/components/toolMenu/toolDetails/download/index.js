@@ -35,18 +35,12 @@ export const MyDownload = props => {
   const [objLink, setObjLink] = useState(null);
   const [imgLink, setImgLink] = useState(null);
 
-  useEffect(()=>{
-    setImgLink(props.data.takeScreenShotImg);
-  },[props.data.takeScreenShotImg])
-
-
   const ref = useRef();
   const exporter = new GLTFExporter();
   const Objexporter = new PLYExporter();
 
   useEffect(() => {
     setResource(props.data.downloadTarget)
-    console.log(props.data.downloadTarget)
   }, [props.data.downloadTarget])
 
   useEffect(() => {
@@ -126,13 +120,13 @@ export const MyDownload = props => {
                   <button className="custom-btn btn-6" ><span>Download</span></button>
                 </a>
                 <div className='text'>
-                  By PLY File:
+                  By OBj File:
                 </div>
                 <a href={objLink} download='new.obj' onClick={handlePopup}>
                   <button className="custom-btn btn-5" ><span>Download</span></button>
                 </a>
                 <div className='text'>
-                  By OBj File:
+                  By PLY File:
                 </div>
 
                 <button className="custom-btn btn-7" ><span>Comming soon...</span></button>

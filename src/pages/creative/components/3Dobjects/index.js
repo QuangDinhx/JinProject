@@ -38,6 +38,7 @@ let history = [{
   pos: [],
   rotate: [],
   scale: [],
+  lock:[]
 
 }]
 
@@ -61,18 +62,56 @@ export const Object3D = props => {
 
   const [scales, setScales] = useState([]);
 
+  const [lockedList,setLockedList] = useState([])
+
+  // useEffect(()=>{
+  //   window.addEventListener('keydown',keydownZ)
+    
+  //   return ()=>{
+  //     window.removeEventListener("keypress",keydownZ)
+      
+  //   }
+  // },[])
+
+  // useEffect(()=>{
+    
+  //   window.addEventListener('keydown',keydownY)
+  //   return ()=>{
+      
+  //     window.removeEventListener("keypress",keydownY)
+  //   }
+  // },[])
 
 
-  function updateHistory(files, poss, rotatee, scalee) {
+  // function keydownZ(e){
+  //   e.preventDefault();
+  //   if(e.keyCode===90 && e.ctrlKey){
+  //     console.log(e)
+  //     handleUndo()
+  //   }
+  // }
+
+  // function keydownY(e){
+  //   e.preventDefault();
+  //   if(e.keyCode===89 && e.ctrlKey){
+  //     handleMoveOn()
+  //   }
+  // }
+
+
+
+
+  function updateHistory(files, poss, rotatee, scalee,lock) {
 
     history = history.slice(0, flag + 1);
     history = history.concat([{
       files: files,
       pos: poss,
       rotate: rotatee,
-      scale: scalee
+      scale: scalee,
+      lock:lock
     }])
-    console.log(history)
+    
     flag += 1;
 
 
@@ -87,7 +126,7 @@ export const Object3D = props => {
     }
 
     flag -= 1;
-    const { files, pos, rotate, scale } = history[flag];
+    const { files, pos, rotate, scale,lock } = history[flag];
 
     props.setData({
       fileInputs: files ? files : []
@@ -95,6 +134,7 @@ export const Object3D = props => {
     setPos(pos)
     setRotates(rotate)
     setScales(scale)
+    setLockedList(lock)
 
   }
 
@@ -105,7 +145,7 @@ export const Object3D = props => {
     }
 
     flag += 1
-    let { files, pos, rotate, scale } = history[flag];
+    let { files, pos, rotate, scale,lock } = history[flag];
 
     props.setData({
       fileInputs: files ? files : []
@@ -113,6 +153,7 @@ export const Object3D = props => {
     setPos(pos)
     setRotates(rotate)
     setScales(scale)
+    setLockedList(lock)
 
   }
 
@@ -152,13 +193,17 @@ export const Object3D = props => {
     a.push([value])
     setPos(a)
     let b = rotates.map(item => ([...item]));
-    b.push([[0, 0, 0]]);
+    if(b.length !== a.length){
+      b.push([[0, 0, 0]]);
+    }
     setRotates(b);
     let c = scales.map(item => ([...item]));
-    c.push([[1, 1, 1]]);
+    if(c.length !== a.length){
+      c.push([[1, 1, 1]]);
+    }
     setScales(c);
     let cloneData = props.data.fileInputs.map(item => ([...item]))
-    updateHistory(cloneData, a, b, c)
+    updateHistory(cloneData, a, b, c,lockedList)
   }
 
 
@@ -223,12 +268,13 @@ export const Object3D = props => {
 
       <div className='captureAll'>
         <Canvas shadows={props.data.disableAllShadow ? false : true} gl={{ preserveDrawingBuffer: true }}
+         raycaster={{ params: { Line: { threshold: 0.1 } } }}
         >
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} castShadow={props.data.disableAllShadow ? false : true} />
           <pointLight position={[-10, 10, -10]} castShadow={props.data.disableAllShadow ? false : true} />
-          {props.data.fileInputs.length !== 0 && <Objects fs={props.data.fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales}
-            isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }} updateHistory={(files, pos, rotate, scale) => { updateHistory(files, pos, rotate, scale) }}
+          {props.data.fileInputs.length !== 0 && <Objects fs={props.data.fileInputs} setIsDragging={setIsDraggingf} floorPlane={floorPlane} Fpos={pos} Frotate={rotates} Fscale={scales} lockedList={lockedList} setLockedList={setLockedList}
+            isSearchingDone={isSearchingDone} data={props.data} setData={(prop) => { props.setData(prop) }} updateHistory={(files, pos, rotate, scale,lock) => { updateHistory(files, pos, rotate, scale,lock) }}
             setPos={(prop) => { setPos(prop) }} setRotates={(prop) => { setRotates(prop) }} setScales={(prop) => { setScales(prop) }} />}
           <Background data={props.data} setData={(prop) => { props.setData(prop) }}></Background>
           <Checkered floorPlane={floorPlane} isSearching={isSearching} setIsSearching={setIsSearchingf} setPosision={addPos} setIsSearchingDone={setIsSearchingDonef}
@@ -488,7 +534,7 @@ export const Objects = props => {
 
   const [selected, setSelected] = useState([]);
   const [focus, setFocus] = useState([]);
-  const [lockedList, setLockedList] = useState([]);
+  
   const [enabled, setEnabled] = useState([]);
   const [mode, setMode] = useState('translate');
 
@@ -499,7 +545,7 @@ export const Objects = props => {
   const [extraRotate, setExtraRotate] = useState([]);
   const [extraScale, setExtraScale] = useState([]);
   const [selectEnable, setSelectEnable] = useState(true);
-  const [refSelect, setRefSelect] = useState(null);
+  const [refSelect, setRefSelect] = useState([]);
   const groupRef = useRef();
   let needto = false;
 
@@ -525,11 +571,13 @@ export const Objects = props => {
 
   function handleCopy(index, ref) {
     if (!isMax) {
-      if (props.data.isSearching == false) {
+      if (props.data.isSearching == false ) {
+        
 
-        let listFiles = [];
-        listFiles = props.data.fileInputs;
-
+        
+        let listFiles = (props.data.fileInputs).map(item => ([...item]));
+        
+        
         let newFile = {
           name: `Clone[${index}]`,
           isGltf: true,
@@ -548,50 +596,64 @@ export const Objects = props => {
         props.setData({
           objectCount: count,
         })
+        let newR = (props.Frotate).map(item => ([...item]));
+        let newS = (props.Fscale).map(item => ([...item]));
+        let cloneR = newR[index]
+        let cloneS = newS[index]
+        newR.push(cloneR)
+        newS.push(cloneS)
+        props.setRotates(newR)
+        props.setScales(newS)
       }
     }
 
   }
+  useEffect(()=>{
+    if(enabled.length == 0){
+      
+      setSelectEnable(true)
+    }else{
+      setSelected([])
+      setSelectEnable(false)
+    }
+  },[enabled])
 
   function handleSelect(e, key,ref) {
-    if (selectEnable) {
-      if (e.ctrlKey) {
+    
+    if (selectEnable && props.data.isSearching == false) {
+      if (e && e.ctrlKey) {
         let selectA = [...selected];
+        let refSelectA = [...refSelect]
 
         if (!selectA.includes(key)) {
           selectA.push(key);
-          if(checkGroup(key)){
-            handleGrouped2(key,ref)
-          }
+          refSelectA.push({
+            index:key,
+            ref:ref
+          })
+          
         } else {
           selectA = selectA.filter((item) => item !== key);
+          refSelectA = refSelectA.filter((item)=>item.index !== key)
         }
         setSelected(selectA)
-
+        setRefSelect(refSelectA)
 
       } else {
         if (!selected.includes(key)) {
           setSelected([key]);
+          setRefSelect([{
+            index:key,
+            ref:ref
+          }])
           
-          
-          if(checkGroup(key)){
-            handleGrouped2(key,ref)
-          }
         } else {
           setSelected([])
+          setRefSelect([])
         }
       }
     }
 
-  }
-
-  function checkGroup(i){
-    let files = props.data.fileInputs.map(item=>([...item]));
-    if(files[i].length >=2 ){
-      return true
-    }else{
-      return false
-    }
   }
 
   function handleFocus(key) {
@@ -603,17 +665,15 @@ export const Objects = props => {
   }
 
   function handleContextMenu(e, index, ref) {
-    if(checkGroup(index)){
-      handleGrouped2(index,ref)
-    }
+    
 
     if (props.data.isSearching == false) {
       const menuItems1 = [
         {
-          display: lockedList.includes(index) ? 'Unlock' : 'Lock',
-          icon: lockedList.includes(index) ? <FontAwesomeIcon icon={faLockOpen} /> : <FontAwesomeIcon icon={faLock} />,
+          display: props.lockedList.includes(index) ? 'Unlock' : 'Lock',
+          icon: props.lockedList.includes(index) ? <FontAwesomeIcon icon={faLockOpen} /> : <FontAwesomeIcon icon={faLock} />,
           event: () => {
-            if (lockedList.includes(index)) {
+            if (props.lockedList.includes(index)) {
               handleUnLock(index)
             } else {
               handleLock(index)
@@ -706,8 +766,10 @@ export const Objects = props => {
       if (selected.length > 1) {
         menuItems.push(menuItems2[0])
       }
-      menuItems.push(menuItems1[0]);
-      if (!lockedList.includes(index)) {
+      if (selected.length <= 1) {
+        menuItems.push(menuItems1[0]);
+      }
+      if (!props.lockedList.includes(index)) {
         menuItems.push(menuItems1[1])
 
         if (selected.length <= 1) {
@@ -811,7 +873,7 @@ export const Objects = props => {
       props.setPos(newFpos);
       props.setRotates(newFrotate);
       props.setScales(newFscale);
-      props.updateHistory(newfileInputs, newFpos, newFrotate, newFscale);
+      props.updateHistory(newfileInputs, newFpos, newFrotate, newFscale,props.lockedList);
     } else {
 
       let newfileInputs = [...props.data.fileInputs];
@@ -860,53 +922,35 @@ export const Objects = props => {
       updated = updated.filter((item, i) => item !== index);
       setSelected(updated)
     }
-    if (lockedList.includes(index)) {
-      let updated = [...lockedList];
+    if (props.lockedList.includes(index)) {
+      let updated = [...props.lockedList];
       updated = updated.filter((item, i) => item !== index);
-      setLockedList(updated)
+      props.setLockedList(updated)
     }
   }
 
   function handleLock(index) {
-    let updated = [...lockedList];
+
+    let updated = [...props.lockedList];
     updated.push(index);
-    setLockedList(updated)
+    props.setLockedList(updated)
+    props.updateHistory(props.data.fileInputs,props.Fpos,props.Frotate,props.Fscale,updated)
   }
 
   function handleUnLock(index) {
-    let updated = [...lockedList];
+    let updated = [...props.lockedList];
     updated = updated.filter((item, i) => item !== index);
-    setLockedList(updated)
+    props.setLockedList(updated);
+    props.updateHistory(props.data.fileInputs,props.Fpos,props.Frotate,props.Fscale,updated);
+    setSelected([index])
   }
 
-  function handleGrouped2(i,ref){
-    let fileInputUp = props.data.fileInputs.map(item => ([...item]));
-    let posUp = props.Fpos.map(item => ([...item]));
-    let rotateUp = props.Frotate.map(item => ([...item]));
-    let scaleUp = props.Fscale.map(item => ([...item]));
-    fileInputUp[i] = [{
-      name:`Group[${i}]`,
-      isGltf:true,
-      model:ref,
-      isImg:false,
-    }]
-    posUp[i] = [getExtraPos(i)];
-    rotateUp[i] = [getExtraRotate(i)];
-    scaleUp[i] = [getExtraScale(i)];
-    props.setPos(posUp);
-    props.setScales(scaleUp);
-    props.setRotates(rotateUp);
-
-    props.setData({
-      fileInputs: fileInputUp
-    })
-    console.log('isok')
-    needto = false
-  }
+  
 
   function handleGrouped() {
     needto = true;
     let array = [...selected]
+    let refA = [...refSelect]
     let groupIndex = array[0];
     array.forEach((e, i) => {
       if (e <= groupIndex) {
@@ -923,89 +967,66 @@ export const Objects = props => {
     let posUp = props.Fpos.map(item => ([...item]));
     let rotateUp = props.Frotate.map(item => ([...item]));
     let scaleUp = props.Fscale.map(item => ([...item]));
-    let currentExtraPos = [0, 0, 0];
-    let currentExtraRotate = [0, 0, 0];
-    let currentExtraScale = [1, 1, 1];
+   
 
 
+    let group = new THREE.Group();
 
-
-    if (fileInputUp[groupIndex].length >= 2) {
-      currentExtraPos = getExtraPos(groupIndex);
-      currentExtraRotate = getExtraRotate(groupIndex);
-      currentExtraScale = getExtraScale(groupIndex);
-
-    } else {
-      addExtraPos(groupIndex, [0, 0, 0]);
-      addExtraRotate(groupIndex, [0, 0, 0]);
-      addExtraScale(groupIndex, [1, 1, 1]);
-
-    }
-
-
-
-    pushAr.map((item, index) => {
-      fileInputUp
+    console.log(posUp)
+    console.log(refA)
+    
+    refA.forEach((item)=>{
+      let cloneRef = item.ref.clone();
+      console.log(cloneRef);
+      cloneRef.position.x = posUp[item.index][0][0]
+      cloneRef.position.y = posUp[item.index][0][1] - 1.5;
+      cloneRef.position.z = posUp[item.index][0][2]
+      cloneRef.rotation.x = rotateUp[item.index][0][0]
+      cloneRef.rotation.y = rotateUp[item.index][0][1]
+      cloneRef.rotation.z = rotateUp[item.index][0][2]
+      cloneRef.scale.x = scaleUp[item.index][0][0]
+      cloneRef.scale.y = scaleUp[item.index][0][1]
+      cloneRef.scale.z = scaleUp[item.index][0][2]
+      group.add(cloneRef)
     })
-    pushAr.map((item, index) => {
-      fileInputUp[item].forEach((e, i) => {
-        fileInputUp[groupIndex].push(e);
-      })
-      fileInputUp[item] = []
-      posUp[item].forEach((e, i) => {
-        let newX = e[0] - currentExtraPos[0];
-        let newY = e[1] - currentExtraPos[1];
-        let newZ = e[2] - currentExtraPos[2];
-
-        let X = newX;
-        let Y = newY;
-        let Z = newZ;
-
-
-
-        let a = currentExtraRotate[0];
-        let b = currentExtraRotate[1];
-        let c = currentExtraRotate[2];
-
-        let pX = X * Math.cos(b) * Math.cos(c) + Y * (Math.cos(a) * Math.sin(c) + Math.sin(a) * Math.sin(b) * Math.cos(c)) + Z * (Math.sin(a) * Math.sin(c) - Math.cos(a) * Math.sin(b) * Math.cos(c));
-        let pY = -X * Math.cos(b) * Math.sin(c) + Y * (Math.cos(a) * Math.cos(c) - Math.sin(a) * Math.sin(b) * Math.sin(c)) + Z * (Math.sin(a) * Math.cos(c) + Math.cos(a) * Math.sin(b) * Math.sin(c));
-        let pZ = X * Math.sin(b) - Y * Math.sin(a) * Math.cos(b) + Z * Math.cos(a) * Math.cos(b)
-
-        let finalpos = [pX / currentExtraScale[0],
-        pY / currentExtraScale[1],
-        pZ / currentExtraScale[2]
-        ]
-        posUp[groupIndex].push(finalpos);
-      })
-
-
-      posUp[item] = []
-
-      rotateUp[item].forEach((e, i) => {
-
-        let myrotate = [(e[0] - currentExtraRotate[0]), (e[1] - currentExtraRotate[1]), (e[2] - currentExtraRotate[2])]
-
-        rotateUp[groupIndex].push(myrotate);
-      })
-      rotateUp[item] = []
-
-
-      scaleUp[item].forEach((e, i) => {
-        let myscale = [(e[0] / currentExtraScale[0]), (e[1] / currentExtraScale[1]), (e[2] / currentExtraScale[2])]
-        scaleUp[groupIndex].push(myscale);
-      })
-      scaleUp[item] = []
+    console.log(group)
+    array.forEach((item)=>{
+      if(item == groupIndex){
+        fileInputUp[item] = [{
+          name:`Group[${item}]`,
+          isGroup:true,
+          model:group,
+          isGltf:true,
+          isImg:false,
+          isGeo:false
+          
+        }]
+  
+        
+        posUp[item] = [[0,posUp[item][0][1],0]];
+        rotateUp[item] = [[0,0,0]];
+        scaleUp[item] = [[1,1,1]];
+      }else{
+        fileInputUp[item] = []
+        posUp[item] = [];
+        rotateUp[item] = [];
+        scaleUp[item] = [];
+      }
     })
+
+    
 
     props.setPos(posUp);
     props.setScales(scaleUp);
     props.setRotates(rotateUp);
-    setSelected([groupIndex]);
+    setSelected([]);
+    setRefSelect([]);
 
     props.setData({
       fileInputs: fileInputUp
     })
-    props.updateHistory(fileInputUp, posUp, rotateUp, scaleUp);
+    props.updateHistory(fileInputUp, posUp, rotateUp,scaleUp,props.lockedList);
+    
 
 
   }
@@ -1017,7 +1038,7 @@ export const Objects = props => {
       props.setPos(newArr);
       let newR = (props.Frotate).map(item => ([...item]));
       let newS = (props.Fscale).map(item => ([...item]));
-      props.updateHistory(props.data.fileInputs, newArr, newR, newS);
+      props.updateHistory(props.data.fileInputs, newArr, newR, newS,props.lockedList);
     }
 
   }
@@ -1025,11 +1046,12 @@ export const Objects = props => {
   function setObjectRotate(a, b, value) {
     let newArr = (props.Frotate).map(item => ([...item]))
     if (equal(newArr[a][b], value)) {
-      newArr[a][b] = value
+      let clone = [newArr[a][b][0] + value[0],newArr[a][b][1] + value[1],newArr[a][b][2] + value[2]]      
+      newArr[a][b] = clone
       props.setRotates(newArr);
       let newP = (props.Fpos).map(item => ([...item]));
       let newS = (props.Fscale).map(item => ([...item]));
-      props.updateHistory(props.data.fileInputs, newP, newArr, newS);
+      props.updateHistory(props.data.fileInputs, newP, newArr, newS,props.lockedList);
     }
 
   }
@@ -1037,13 +1059,12 @@ export const Objects = props => {
   function setObjectScale(a, b, value) {
     let newArr = (props.Fscale).map(item => ([...item]));
     if (equal(newArr[a][b], value)) {
-      console.log(newArr[a][b]);
-      console.log(value)
+      
       newArr[a][b] = value
       props.setScales(newArr);
       let newP = (props.Fpos).map(item => ([...item]));
       let newR = (props.Frotate).map(item => ([...item]));
-      props.updateHistory(props.data.fileInputs, newP, newR, newArr);
+      props.updateHistory(props.data.fileInputs, newP, newR, newArr,props.lockedList);
     }
 
   }
@@ -1053,127 +1074,6 @@ export const Objects = props => {
     } else {
       return false
     }
-  }
-
-  function getExtraPos(index) {
-    let myReturn;
-    extraPos.forEach((e, i) => {
-      if (e.index == index) {
-        myReturn = e.value
-      }
-    })
-    return myReturn
-  }
-
-  function getExtraRotate(index) {
-    let myReturn;
-    extraRotate.forEach((e, i) => {
-      if (e.index == index) {
-        myReturn = e.value
-      }
-    })
-    return myReturn
-  }
-
-  function getExtraScale(index) {
-    let myReturn;
-    extraScale.forEach((e, i) => {
-      if (e.index == index) {
-        myReturn = e.value
-      }
-    })
-    return myReturn
-  }
-
-  function addExtraPos(i, value) {
-
-    let object = {
-      index: i,
-      value: value
-    }
-    let newExtra = extraPos;
-
-    let isExsist = false;
-
-    if (newExtra.length !== 0) {
-      newExtra.forEach((e, index) => {
-        if (e.index == i) {
-          if (equal(e.value, value)) {
-            isExsist = true;
-            newExtra[index] = object;
-          }
-        }
-      })
-    }
-    if (!isExsist) {
-      newExtra.push(object);
-    }
-
-    setExtraPos(newExtra)
-  }
-
-
-  function addExtraRotate(i, value) {
-    let object = {
-      index: i,
-      value: value
-    }
-    let newExtra = extraRotate;
-
-    let isExsist = false;
-
-    if (newExtra.length !== 0) {
-      newExtra.forEach((e, index) => {
-        if (e.index == i) {
-          if (equal(e.value, value)) {
-            isExsist = true;
-            let addvalue = e.value;
-
-            newExtra[index] = {
-              index: object.index,
-              value: [addvalue[0] + object.value[0], addvalue[1] + object.value[1], addvalue[2] + object.value[2]]
-            };
-          }
-
-
-        }
-      })
-    }
-    if (!isExsist) {
-      newExtra.push(object);
-    }
-
-    setExtraRotate(newExtra)
-  }
-
-  function addExtraScale(i, value) {
-    let object = {
-      index: i,
-      value: value
-    }
-    let newExtra = extraScale;
-
-    let isExsist = false;
-
-    if (newExtra.length !== 0) {
-      newExtra.forEach((e, index) => {
-        if (e.index == i) {
-          if (equal(e.value, value)) {
-            isExsist = true;
-            let addvalue = e.value;
-            newExtra[index] = {
-              index: object.index,
-              value: [addvalue[0] * object.value[0], addvalue[1] * object.value[1], addvalue[2] * object.value[2]]
-            };
-          }
-
-        }
-      })
-    }
-    if (!isExsist) {
-      newExtra.push(object);
-    }
-    setExtraScale(newExtra)
   }
 
   function handleEnableTranslate(index) {
@@ -1204,27 +1104,7 @@ export const Objects = props => {
 
         return (
           <group key={i}>
-            {(props.Fpos[i] && e.length >= 2 && e.length == props.Fpos[i].length) &&
-              <>
-                <GroupObject file={e} setIsDragging={props.setIsDragging} floorPlane={props.floorPlane}
-                  Fpos={props.Fpos[i]}
-                  Frotate={props.Frotate[i]}
-                  Fscale={props.Fscale[i]}
-                  extraPos={extraPos}
-                  extraScale={extraScale}
-                  extraRotate={extraRotate}
-                  isSearchDone={props.isSearchingDone}
-
-                  status={selected.includes(i)} click={(e,ref) => handleSelect(e, i,ref)} focus={() => handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e, ref) => handleContextMenu(e, i, ref)}
-                  setExtraRotate={(value) => { addExtraRotate(i, value) }}
-                  setExtraScale={(value) => { addExtraScale(i, value) }}
-                  setExtraPos={(value) => { addExtraPos(i, value) }}
-                  isEnabled={enabled.includes(i)} mode={mode} debug={debug}
-                  disableAllShadow={props.data.disableAllShadow}
-
-                />
-              </>
-            }
+            
             {(props.Fpos[i] && e.length == 1 && e.length == props.Fpos[i].length) &&
               <>
                 <Object file={e[0]} setIsDragging={props.setIsDragging} floorPlane={props.floorPlane}
@@ -1232,10 +1112,12 @@ export const Objects = props => {
                   Frotate={props.Frotate[i][0]}
                   Fscale={props.Fscale[i][0]}
                   isSearchDone={props.isSearchingDone}
-                  status={selected.includes(i)} click={(e,ref) => handleSelect(e, i,ref)} focus={() => handleFocus(i)} isFocus={focus.includes(i)} isLocked={lockedList.includes(i)} handleContextMenu={(e, ref) => handleContextMenu(e, i, ref)} isGrouped={false}
+                  status={selected.includes(i)} click={(e,ref) => handleSelect(e, i,ref)} focus={() => handleFocus(i)} isFocus={focus.includes(i)} isLocked={props.lockedList.includes(i)} 
+                  handleContextMenu={(e, ref) => handleContextMenu(e, i, ref)} isGrouped={false}
                   setObjectPos={(value) => setObjectPos(i, 0, value)}
                   setObjectRotate={(value) => setObjectRotate(i, 0, value)}
                   setObjectScale={(value) => setObjectScale(i, 0, value)}
+                  
                   isEnabled={enabled.includes(i)} mode={mode} debug={debug}
                   disableAllShadow={props.data.disableAllShadow}
                 />
@@ -1250,177 +1132,6 @@ export const Objects = props => {
 
 }
 
-
-const GroupObject = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, extraPos, extraScale, extraRotate, isSearchDone, status, click, isLocked, handleContextMenu,
-  groupRef, setExtraRotate, setExtraScale, setExtraPos, isEnabled, mode, isFocus, focus, debug, disableAllShadow, updateHistory }) => {
-  const [pos, setPos] = useState([0, 0, 0]);
-  const [ppos, setPpos] = useState([0, 0, 0]);
-  const [hight, setHight] = useState(0);
-  const [box, setBox] = useState();
-  const transform = useRef()
-
-
-
-  useEffect(() => {
-    setPpos(pos)
-  }, [pos])
-
-  const boxRef = useRef();
-
-
-
-
-
-  let planeIntersectPoint = new THREE.Vector3();
-
-  const [spring, api] = useSpring(() => ({
-    // position: [0, 0, 0],
-    position: pos,
-    scale: 1,
-    rotation: [0, 0, 0],
-    config: { friction: 10 }
-  }));
-
-  const bind = useDrag(
-    ({ active, movement: [x, y], timeStamp, event }) => {
-      if (!isEnabled) {
-        if (active && !isLocked && status) {
-          event.ray.intersectPlane(floorPlane, planeIntersectPoint);
-          setPos([planeIntersectPoint.x, hight, planeIntersectPoint.z]);
-
-          setIsDragging(active);
-        }
-        if (status && !isLocked) {
-          if (active == false) {
-            setExtraPos(pos)
-          }
-        } else {
-          setIsDragging(false)
-        }
-
-        api.start({
-          scale: active ? 1 : 1,
-        });
-        return timeStamp;
-      }
-    },
-    { delay: true }
-  );
-
-  function doNothing(value) {
-
-  }
-
-  function addsetBox(e) {
-    setBox(e)
-  }
-
-  function handleUpdate() {
-    if (isEnabled) {
-
-      if (mode == 'translate') {
-
-        let vec = {
-          x: ppos[0] + transform.current.offset.x,
-          y: ppos[1] + transform.current.offset.y,
-          z: ppos[2] + transform.current.offset.z
-        }
-        setPpos([ppos[0] + transform.current.offset.x, ppos[1] + transform.current.offset.y, ppos[2] + transform.current.offset.z])
-        if (vec.y !== hight) {
-          setHight(vec.y)
-        }
-        setExtraPos([vec.x, vec.y, vec.z]);
-      }
-      if (mode == 'rotate') {
-
-
-        let finalRotateX = transform.current.rotationAxis.x !== 0 ? transform.current.rotationAngle : 0
-        let finalRotateY = transform.current.rotationAxis.y !== 0 ? transform.current.rotationAngle : 0
-        let finalRotateZ = transform.current.rotationAxis.z !== 0 ? transform.current.rotationAngle : 0
-        let finalRotate = [finalRotateX, finalRotateY, finalRotateZ]
-        // console.log(finalRotate)
-        setExtraRotate(finalRotate);
-      }
-      if (mode == 'scale') {
-        setExtraScale([transform.current.worldScale.x, transform.current.worldScale.y, transform.current.worldScale.z])
-      }
-
-
-
-
-    }
-
-  }
-
-  return (
-    <>
-      <TransformControls ref={transform} position={pos} object={boxRef.current} enabled={isEnabled && !isLocked} mode={mode}
-        showX={isEnabled && !isLocked} showY={isEnabled && !isLocked} showZ={isEnabled && !isLocked}
-        onObjectChange={() => { setIsDragging(true) }} onMouseUp={() => { setIsDragging(false); handleUpdate() }}
-
-      >
-
-        <animated.mesh ref={boxRef}
-          {...spring} {...bind()} onClick={(e) => { e.stopPropagation(); if (!isLocked && !isEnabled) { click(e,boxRef.current.clone()); setIsDragging(true) } }}
-          onContextMenu={(e) => { e.stopPropagation(); handleContextMenu(e, boxRef.current.clone()) }}
-          onPointerLeave={(e) => { if (!isEnabled) setIsDragging(false) }}
-
-
-        >
-
-          <group ref={addsetBox} >
-            {file.map((e, i) => {
-              return (
-                <group key={i + 1000}>
-                  <Object file={e} setIsDragging={doNothing} floorPlane={floorPlane}
-                    Fpos={[(Fpos[i][0]), Fpos[i][1], (Fpos[i][2])]}
-                    Frotate={Frotate[i]}
-                    Fscale={Fscale[i]}
-                    isSearchDone={isSearchDone}
-                    focus={(e) => doNothing(e)}
-                    isFocus={isFocus}
-                    status={status} click={(e) => doNothing(e)} isLocked={true} handleContextMenu={(e) => doNothing(e)} isGrouped={true}
-                    isEnabled={false} mode={'translate'} debug={debug}
-                    disableAllShadow={disableAllShadow}
-                  />
-
-
-                </group>
-              )
-            })}
-          </group>
-          <MyBoxHelper box={box} isLocked={isLocked} status={status} isEnabled={isEnabled} />
-
-        </animated.mesh>
-
-      </TransformControls>
-      {debug &&
-        <>
-          <Line start={pos} end={[0, 0, 0]} color={"black"} />
-          <Text
-            scale={[1, 1, 1]}
-            color="black"
-            anchorX="center"
-            anchorY="middle"
-            position={pos}
-          >
-            {`[${pos[0]},`}
-            {`${pos[1]},`}
-            {`${pos[2]}]`}
-          </Text>
-        </>
-      }
-    </>
-
-
-
-
-
-
-
-  )
-
-}
 
 const MyBoxHelper = ({ box, isLocked, status, isEnabled }) => {
   const helper = useRef()
@@ -1476,7 +1187,7 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
   useEffect(() => {
     setPos(Fpos)
   }, [Fpos])
-
+  
 
 
 
@@ -1525,7 +1236,7 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
 
         if (active && !isLocked && status && !isGrouped) {
           event.ray.intersectPlane(floorPlane, planeIntersectPoint);
-          setPos([planeIntersectPoint.x, hight, planeIntersectPoint.z]);
+          setPos([planeIntersectPoint.x,hight, planeIntersectPoint.z]);
           setIsDragging(active);
         }
 
@@ -1538,9 +1249,9 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
         }
 
 
-        api.start({
-          scale: active ? 1 : 1,
-        });
+        // api.start({
+        //   scale: active ? 1 : 1,
+        // });
         return timeStamp;
       }
 
@@ -1569,7 +1280,6 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
         let b = transform.current.rotationAxis.y !== 0 ? transform.current.rotationAngle : 0
         let c = transform.current.rotationAxis.z !== 0 ? transform.current.rotationAngle : 0
         let finalRotate = [a, b, c]
-        setRotates(finalRotate);
 
         setObjectRotate(finalRotate);
       }
@@ -1578,36 +1288,42 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
         let a = transform.current.worldScale.x;
         let b = transform.current.worldScale.y;
         let c = transform.current.worldScale.z;
-        setScales([a, b, c])
 
         setObjectScale([a, b, c])
       }
 
 
-
+      setIsDragging(false);
     }
 
   }
 
-
+  
   if (pos !== null && isSearchingDone) {
-
+    if(file.isGroup){
+      console.log('isMount')
+    }
     return (
       <Suspense fallback={null} >
-        {!isGrouped ?
+        
           <>
-            <TransformControls ref={transform} position={pos} enabled={isEnabled && !isLocked} mode={mode}
+            <TransformControls ref={transform}  enabled={isEnabled && !isLocked} mode={mode}
               showX={isEnabled && !isLocked} showY={isEnabled && !isLocked} showZ={isEnabled && !isLocked}
 
-              onObjectChange={() => { setIsDragging(true) }} onMouseUp={() => { setIsDragging(false); handleUpdate() }}
-              onContextMenu={(e) => { e.stopPropagation(); handleContextMenu(e, downloadObj.current.clone()) }}
-              rotation={Frotate} scale={Fscale}
+              onObjectChange={(e) => { setIsDragging(true) }} onMouseUp={() => {  handleUpdate() }}
+              
+              onPointerLeave={(e) => { if (!isEnabled){ e.stopPropagation();setIsDragging(false)} }}
+              position={pos} rotation={Frotate} scale={Fscale}
             >
-              <animated.mesh ref={dragObjectRef}>
-                <mesh ref={downloadObj}  >
+              <animated.mesh ref={dragObjectRef} {...bind()}  onClick={(e) => { e.stopPropagation(); if (!isLocked && !isEnabled) { click(e,downloadObj.current.clone()) } }}
+              onContextMenu={(e) => { e.stopPropagation(); handleContextMenu(e, downloadObj.current.clone()) }}>
+                <mesh ref={downloadObj}   
+              
+                >
                   {
                     (file.model && file.isGltf) &&
-                    <primitive ref={meshRef} object={file.model} castShadow={disableAllShadow ? false : true} recieveShadow={disableAllShadow ? false : true} />
+                    <primitive ref={meshRef} object={file.model} castShadow={disableAllShadow ? false : true} recieveShadow={disableAllShadow ? false : true}/>
+                    
                   }
                   {
                     (file.texture && file.isImg) &&
@@ -1627,15 +1343,10 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
 
                     </mesh>
                   }
+                  
                 </mesh>
 
-                <boxHelper args={[ref, 0xffff00]} {...spring} {...bind()}
-                  visible={!isLocked && status && !isEnabled}
-                  // visible={true}
-                  onClick={(e) => { e.stopPropagation(); if (!isLocked && !isEnabled) { click(e,downloadObj.current.clone()) } }}
-                  onPointerLeave={(e) => { if (!isEnabled) setIsDragging(false) }}
-
-                />
+                <MyBoxHelper box={ref} isLocked={isLocked} status={status} isEnabled={isEnabled} />
 
               </animated.mesh>
             </TransformControls>
@@ -1658,57 +1369,6 @@ const Object = ({ file, setIsDragging, floorPlane, Fpos, Frotate, Fscale, isSear
             }
 
           </>
-
-          :
-          <>
-            <animated.mesh ref={dragObjectRef} position={Fpos} rotation={Frotate} scale={Fscale}>
-
-              {
-                (file.model && file.isGltf) &&
-                <primitive ref={meshRef} object={file.model} castShadow={disableAllShadow ? false : true} recieveShadow={disableAllShadow ? false : true} />
-              }
-              {
-                (file.texture && file.isImg) &&
-                <mesh ref={meshRef} geometry={planeGeo} castShadow={disableAllShadow ? false : true} recieveShadow={disableAllShadow ? false : true} material={new THREE.MeshStandardMaterial({
-                  map: file.texture,
-                  side: THREE.DoubleSide,
-                  transparent: true
-                })}></mesh>
-              }
-              {
-                (file.geo && file.isGeo) &&
-                <mesh geometry={file.geo} castShadow={disableAllShadow ? false : true} recieveShadow={disableAllShadow ? false : true} material={disableAllShadow ? file.material2 : file.material} ref={meshRef}>
-
-                </mesh>
-              }
-              <boxHelper args={[ref, 0xffff00]} {...spring} {...bind()}
-                visible={!isLocked && status && !isEnabled}
-
-              />
-
-            </animated.mesh>
-            {debug &&
-              <>
-                <Line start={pos} end={[0, 0, 0]} color={"black"} />
-
-                <Text
-                  scale={[1, 1, 1]}
-                  color="black"
-                  anchorX="center"
-                  anchorY="middle"
-                  position={pos}
-                >
-                  {`[${pos[0]},`}
-                  {`${pos[1]},`}
-                  {`${pos[2]}]`}
-                </Text>
-              </>
-            }
-          </>
-
-        }
-
-
 
       </Suspense>
     )

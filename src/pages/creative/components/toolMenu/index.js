@@ -51,7 +51,7 @@ export const ToolMenu = props => {
       haveContent: true
     },
     {
-      display: 'CheckBoard',
+      display: 'Checkerboard',
       icon: <FontAwesomeIcon icon={faChessBoard} />,
       to: '/',
       content: <MyCheckBoard data={props.data} setData={(prop) => { props.setData(prop) }} switchChanel={switchChanel}/>,

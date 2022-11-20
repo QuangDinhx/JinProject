@@ -49,7 +49,7 @@ import { Roadmap } from "./components/roadmap";
               </a>
             </li>
           </ul>
-          <SocialLinks />
+          {/* <SocialLinks /> */}
         </div>
       </div>
     );
